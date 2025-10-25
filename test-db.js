@@ -1,16 +1,3 @@
-import sql from 'mssql';
-
-const config = {
-  user: 'db_abfceb_proyectoweb_admin',   // tu usuario
-  password: '@mora)45',                 // tu contraseña
-  server: 'SQL5112.site4now.net',        // servidor remoto
-  database: 'db_abfceb_proyectoweb',     // nombre de tu base de datos
-  port: 1433,
-  options: {
-    encrypt: true,               // requerido por SmarterASP.NET
-    trustServerCertificate: true // necesario si hay certificado autofirmado
-  }
-};
 
 async function testConnection() {
   try {
