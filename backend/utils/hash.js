@@ -1,12 +1,10 @@
-import bcrypt from "bcryptjs";
+import bcrypt from "bcrypt";
 
-// Función para generar hash de contraseña
 export const generarHash = async (password) => {
   const salt = await bcrypt.genSalt(10);
-  return bcrypt.hash(password, salt);
+  return await bcrypt.hash(password, salt);
 };
 
-// Función para comparar contraseña ingresada con hash
 export const compararHash = async (password, hash) => {
-  return bcrypt.compare(password, hash);
+  return await bcrypt.compare(password, hash);
 };

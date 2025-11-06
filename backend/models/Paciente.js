@@ -1,20 +1,30 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "./index.js";
 
-const Rol = sequelize.define("Rol", {
+const Paciente = sequelize.define("Paciente", {
   id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
     primaryKey: true,
   },
-  nombre_rol: {
+  nombre: {
     type: DataTypes.STRING,
     allowNull: false,
+  },
+  edad: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
+  genero: {
+    type: DataTypes.STRING,
+  },
+  dpi: {
+    type: DataTypes.STRING,
     unique: true,
   },
-  descripcion: {
+  direccion: {
     type: DataTypes.STRING,
   },
 });
 
-export default Rol;
+export default Paciente;
