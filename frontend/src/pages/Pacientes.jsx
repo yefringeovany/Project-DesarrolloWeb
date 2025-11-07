@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import { obtenerPacientes, crearPaciente, eliminarPaciente } from "../api/pacientes";
+import { obtenerPacientes, crearPaciente, eliminarPaciente, actualizarPaciente } from "../api/pacientes";
 import { puedeGestionarPacientes } from "../utils/roles";
 
 const Pacientes = () => {
@@ -9,7 +9,7 @@ const Pacientes = () => {
   const [form, setForm] = useState({ nombre: "", edad: "", genero: "", dpi: "", direccion: "" });
   const [mensaje, setMensaje] = useState("");
   const [error, setError] = useState("");
-
+  const [editando, setEditando] = useState(null); // 🟢 NUEVO
   const token = localStorage.getItem("token");
 
   const cargarPacientes = async () => {
@@ -30,14 +30,48 @@ const Pacientes = () => {
     setMensaje("");
     setError("");
 
-    const data = await crearPaciente(token, form);
-    if (data.paciente) {
-      setMensaje("Paciente creado exitosamente.");
-      setForm({ nombre: "", edad: "", genero: "", dpi: "", direccion: "" });
-      cargarPacientes();
+    if (editando) {
+      // 🟢 Si estamos editando, actualizamos el paciente
+      const data = await actualizarPaciente(token, editando.id, form);
+      if (data.paciente) {
+        setMensaje("Paciente actualizado exitosamente.");
+        setEditando(null);
+        setForm({ nombre: "", edad: "", genero: "", dpi: "", direccion: "" });
+        cargarPacientes();
+      } else {
+        setError(data.mensaje || "Error al actualizar paciente.");
+      }
     } else {
-      setError(data.mensaje || "Error al crear paciente.");
+      // Si no estamos editando, creamos uno nuevo
+      const data = await crearPaciente(token, form);
+      if (data.paciente) {
+        setMensaje("Paciente creado exitosamente.");
+        setForm({ nombre: "", edad: "", genero: "", dpi: "", direccion: "" });
+        cargarPacientes();
+      } else {
+        setError(data.mensaje || "Error al crear paciente.");
+      }
     }
+  };
+
+  const handleEditar = (paciente) => {
+    // 🟢 Llenamos el formulario con los datos del paciente seleccionado
+    setEditando(paciente);
+    setForm({
+      nombre: paciente.nombre,
+      edad: paciente.edad,
+      genero: paciente.genero,
+      dpi: paciente.dpi,
+      direccion: paciente.direccion,
+    });
+    setMensaje("");
+    setError("");
+  };
+
+  const handleCancelar = () => {
+    // 🟢 Cancelar modo edición
+    setEditando(null);
+    setForm({ nombre: "", edad: "", genero: "", dpi: "", direccion: "" });
   };
 
   const handleEliminar = async (id) => {
@@ -63,7 +97,7 @@ const Pacientes = () => {
 
       {/* Formulario */}
       <div className="card shadow p-4 mb-4">
-        <h5 className="mb-3">Registrar Paciente</h5>
+        <h5 className="mb-3">{editando ? "Editar Paciente" : "Registrar Paciente"}</h5> {/* 🟢 */}
         <form onSubmit={handleSubmit}>
           <div className="row g-3">
             <div className="col-md-4">
@@ -121,7 +155,21 @@ const Pacientes = () => {
               />
             </div>
           </div>
-          <button className="btn btn-success mt-3 w-100">Registrar</button>
+
+          <div className="d-flex gap-2 mt-3">
+            <button className="btn btn-success w-100">
+              {editando ? "Actualizar" : "Registrar"}
+            </button>
+            {editando && (
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={handleCancelar}
+              >
+                Cancelar
+              </button>
+            )}
+          </div>
         </form>
 
         {mensaje && <div className="alert alert-success mt-3">{mensaje}</div>}
@@ -154,12 +202,20 @@ const Pacientes = () => {
                   <td>{p.dpi}</td>
                   <td>{p.direccion}</td>
                   <td>
-                    <button
-                      className="btn btn-danger btn-sm"
-                      onClick={() => handleEliminar(p.id)}
-                    >
-                      Eliminar
-                    </button>
+                    <div className="btn-group">
+                      <button
+                        className="btn btn-warning btn-sm"
+                        onClick={() => handleEditar(p)} // 🟢
+                      >
+                        Editar
+                      </button>
+                      <button
+                        className="btn btn-danger btn-sm"
+                        onClick={() => handleEliminar(p.id)}
+                      >
+                        Eliminar
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))

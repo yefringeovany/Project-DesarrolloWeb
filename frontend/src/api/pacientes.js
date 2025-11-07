@@ -26,3 +26,15 @@ export const eliminarPaciente = async (token, id) => {
   });
   return await res.json();
 };
+
+export const actualizarPaciente = async (token, id, paciente) => {
+  const res = await fetch(`${API_URL}/pacientes/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(paciente),
+  });
+  return await res.json();
+};
