@@ -1,5 +1,5 @@
+// controllers/pacienteController.js
 import Paciente from "../models/Paciente.js";
-import Turno from "../models/Turno.js";
 import { Op } from "sequelize";
 
 // ==========================
@@ -9,35 +9,29 @@ export const crearPaciente = async (req, res) => {
   try {
     const { nombre, edad, genero, dpi, direccion } = req.body;
 
-    // Validaciones
-    if (!nombre || !edad) {
-      return res.status(400).json({ 
-        mensaje: "Nombre y edad son obligatorios." 
+    // Verificar rol
+    const rolUsuario = req.usuario?.Rol?.nombre_rol;
+    if (!["admin", "Enfermero"].includes(rolUsuario)) {
+      return res.status(403).json({ 
+        mensaje: "Solo el administrador o enfermero pueden registrar pacientes." 
       });
     }
 
-    // Verificar si el DPI ya existe
+    // Validaciones básicas
+    if (!nombre || !edad) {
+      return res.status(400).json({ mensaje: "Nombre y edad son obligatorios." });
+    }
+
+    // Validar DPI único
     if (dpi) {
-      const existePaciente = await Paciente.findOne({ where: { dpi } });
-      if (existePaciente) {
-        return res.status(400).json({ 
-          mensaje: "Ya existe un paciente con este DPI." 
-        });
+      const existe = await Paciente.findOne({ where: { dpi } });
+      if (existe) {
+        return res.status(400).json({ mensaje: "Ya existe un paciente con este DPI." });
       }
     }
 
-    const nuevoPaciente = await Paciente.create({
-      nombre,
-      edad,
-      genero,
-      dpi,
-      direccion
-    });
-
-    res.status(201).json({
-      mensaje: "Paciente registrado exitosamente.",
-      paciente: nuevoPaciente
-    });
+    const nuevo = await Paciente.create({ nombre, edad, genero, dpi, direccion });
+    res.status(201).json({ mensaje: "Paciente registrado exitosamente.", paciente: nuevo });
   } catch (error) {
     console.error("Error al crear paciente:", error);
     res.status(500).json({ mensaje: "Error interno del servidor." });
@@ -45,26 +39,50 @@ export const crearPaciente = async (req, res) => {
 };
 
 // ==========================
-// Buscar paciente (por nombre, DPI o ID)
+// Listar pacientes (paginación)
+// ==========================
+export const listarPacientes = async (req, res) => {
+  try {
+    const { page = 1, limit = 20 } = req.query;
+    const offset = (page - 1) * limit;
+
+    const { count, rows } = await Paciente.findAndCountAll({
+      limit: parseInt(limit),
+      offset: parseInt(offset),
+      order: [["nombre", "ASC"]],
+    });
+
+    res.json({
+      total: count,
+      pagina: parseInt(page),
+      totalPaginas: Math.ceil(count / limit),
+      pacientes: rows,
+    });
+  } catch (error) {
+    console.error("Error al listar pacientes:", error);
+    res.status(500).json({ mensaje: "Error interno del servidor." });
+  }
+};
+
+// ==========================
+// Buscar paciente (nombre o DPI)
 // ==========================
 export const buscarPaciente = async (req, res) => {
   try {
     const { query } = req.query;
 
     if (!query || query.trim().length < 2) {
-      return res.status(400).json({ 
-        mensaje: "Debe proporcionar al menos 2 caracteres para buscar." 
-      });
+      return res.status(400).json({ mensaje: "Debe ingresar al menos 2 caracteres para buscar." });
     }
 
     const pacientes = await Paciente.findAll({
       where: {
         [Op.or]: [
           { nombre: { [Op.like]: `%${query}%` } },
-          { dpi: { [Op.like]: `%${query}%` } }
-        ]
+          { dpi: { [Op.like]: `%${query}%` } },
+        ],
       },
-      limit: 20
+      limit: 20,
     });
 
     res.json({ pacientes });
@@ -75,22 +93,12 @@ export const buscarPaciente = async (req, res) => {
 };
 
 // ==========================
-// Obtener paciente por ID con historial
+// Obtener paciente por ID
 // ==========================
 export const obtenerPaciente = async (req, res) => {
   try {
     const { id } = req.params;
-
-    const paciente = await Paciente.findByPk(id, {
-      include: [
-        {
-          model: Turno,
-          include: ['clinica'],
-          order: [['fecha', 'DESC']],
-          limit: 10
-        }
-      ]
-    });
+    const paciente = await Paciente.findByPk(id);
 
     if (!paciente) {
       return res.status(404).json({ mensaje: "Paciente no encontrado." });
@@ -99,32 +107,6 @@ export const obtenerPaciente = async (req, res) => {
     res.json({ paciente });
   } catch (error) {
     console.error("Error al obtener paciente:", error);
-    res.status(500).json({ mensaje: "Error interno del servidor." });
-  }
-};
-
-// ==========================
-// Listar todos los pacientes (con paginación)
-// ==========================
-export const listarPacientes = async (req, res) => {
-  try {
-    const { page = 1, limit = 50 } = req.query;
-    const offset = (page - 1) * limit;
-
-    const { count, rows } = await Paciente.findAndCountAll({
-      limit: parseInt(limit),
-      offset: parseInt(offset),
-      order: [['nombre', 'ASC']]
-    });
-
-    res.json({
-      total: count,
-      pagina: parseInt(page),
-      totalPaginas: Math.ceil(count / limit),
-      pacientes: rows
-    });
-  } catch (error) {
-    console.error("Error al listar pacientes:", error);
     res.status(500).json({ mensaje: "Error interno del servidor." });
   }
 };
@@ -142,33 +124,18 @@ export const actualizarPaciente = async (req, res) => {
       return res.status(404).json({ mensaje: "Paciente no encontrado." });
     }
 
-    // Verificar DPI único si se está cambiando
+    // Validar DPI único si se cambia
     if (dpi && dpi !== paciente.dpi) {
-      const existeDPI = await Paciente.findOne({ 
-        where: { 
-          dpi,
-          id: { [Op.ne]: id }
-        } 
+      const existeDPI = await Paciente.findOne({
+        where: { dpi, id: { [Op.ne]: id } },
       });
       if (existeDPI) {
-        return res.status(400).json({ 
-          mensaje: "Ya existe otro paciente con este DPI." 
-        });
+        return res.status(400).json({ mensaje: "Ya existe otro paciente con este DPI." });
       }
     }
 
-    await paciente.update({
-      nombre: nombre || paciente.nombre,
-      edad: edad || paciente.edad,
-      genero: genero || paciente.genero,
-      dpi: dpi || paciente.dpi,
-      direccion: direccion !== undefined ? direccion : paciente.direccion
-    });
-
-    res.json({
-      mensaje: "Paciente actualizado exitosamente.",
-      paciente
-    });
+    await paciente.update({ nombre, edad, genero, dpi, direccion });
+    res.json({ mensaje: "Paciente actualizado exitosamente.", paciente });
   } catch (error) {
     console.error("Error al actualizar paciente:", error);
     res.status(500).json({ mensaje: "Error interno del servidor." });
@@ -176,7 +143,7 @@ export const actualizarPaciente = async (req, res) => {
 };
 
 // ==========================
-// Eliminar paciente (soft delete opcional)
+// Eliminar paciente
 // ==========================
 export const eliminarPaciente = async (req, res) => {
   try {
@@ -187,24 +154,7 @@ export const eliminarPaciente = async (req, res) => {
       return res.status(404).json({ mensaje: "Paciente no encontrado." });
     }
 
-    // Verificar si tiene turnos activos
-    const turnosActivos = await Turno.count({
-      where: {
-        pacienteId: id,
-        estado: {
-          [Op.in]: ['espera', 'llamando', 'atendiendo']
-        }
-      }
-    });
-
-    if (turnosActivos > 0) {
-      return res.status(400).json({ 
-        mensaje: "No se puede eliminar el paciente porque tiene turnos activos." 
-      });
-    }
-
     await paciente.destroy();
-
     res.json({ mensaje: "Paciente eliminado exitosamente." });
   } catch (error) {
     console.error("Error al eliminar paciente:", error);

@@ -12,7 +12,7 @@ import { loginLimiter, creacionLimiter } from "./middlewares/rateLimiters.js";
 import authRoutes from "./routes/authRoutes.js";
 // Descomentar cuando implementes estos archivos:
 // import turnoRoutes from "./routes/turnoRoutes.js";
-// import pacienteRoutes from "./routes/pacienteRoutes.js";
+import pacienteRoutes from "./routes/pacienteRoutes.js";
  import clinicaRoutes from "./routes/clinicaRoutes.js";
 // import usuarioRoutes from "./routes/usuarioRoutes.js";
 
@@ -156,7 +156,7 @@ app.use("/api/auth", authRoutes);
 
 // Descomentar cuando implementes estos archivos:
 // app.use("/api/turnos", turnoRoutes);
-// app.use("/api/pacientes", pacienteRoutes);
+ app.use("/api/pacientes", pacienteRoutes);
 app.use("/api/clinicas", clinicaRoutes);
 // app.use("/api/usuarios", usuarioRoutes);
 

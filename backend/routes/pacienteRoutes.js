@@ -1,30 +1,30 @@
-// ========================================
-// pacienteRoutes.js
-// ========================================
+// routes/pacienteRoutes.js
 import express from "express";
 import {
   crearPaciente,
+  listarPacientes,
   buscarPaciente,
   obtenerPaciente,
-  listarPacientes,
   actualizarPaciente,
-  eliminarPaciente
+  eliminarPaciente,
 } from "../controllers/pacienteController.js";
+
 import { 
   verificarToken, 
   personalAutorizado,
   soloAdmin
-} from "../middleware/authMiddleware.js";
+} from "../middlewares/authMiddleware.js";
 
 const routerPaciente = express.Router();
 
-// Todas las rutas requieren autenticación
+// Todas requieren autenticación
 routerPaciente.use(verificarToken);
 routerPaciente.use(personalAutorizado);
 
-routerPaciente.post("/", crearPaciente);
-routerPaciente.get("/buscar", buscarPaciente);
+// Rutas CRUD
+routerPaciente.post("/", crearPaciente);              // Solo admin/enfermero
 routerPaciente.get("/", listarPacientes);
+routerPaciente.get("/buscar", buscarPaciente);
 routerPaciente.get("/:id", obtenerPaciente);
 routerPaciente.put("/:id", actualizarPaciente);
 routerPaciente.delete("/:id", soloAdmin, eliminarPaciente);
