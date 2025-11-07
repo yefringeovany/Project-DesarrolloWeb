@@ -5,7 +5,7 @@ import { AuthProvider } from "./context/AuthContext";
 import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Pacientes from "./pages/Pacientes";
-
+import Clinicas from "./pages/Clinicas";
 
 function App() {
   return (
@@ -32,6 +32,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Pacientes />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/clinicas"
+            element={
+              <ProtectedRoute>
+                <Clinicas />
               </ProtectedRoute>
             }
           />
