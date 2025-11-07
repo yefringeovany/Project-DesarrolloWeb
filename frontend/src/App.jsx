@@ -4,6 +4,7 @@ import Register from "./pages/Register";
 import { AuthProvider } from "./context/AuthContext";
 import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Pacientes from "./pages/Pacientes";
 
 
 function App() {
@@ -23,6 +24,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/pacientes"
+            element={
+              <ProtectedRoute>
+                <Pacientes />
               </ProtectedRoute>
             }
           />
