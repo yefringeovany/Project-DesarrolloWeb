@@ -14,7 +14,13 @@ const Rol = sequelize.define("Rol", {
   },
   descripcion: {
     type: DataTypes.STRING,
+  },descripcion: {
+    type: DataTypes.STRING,
   },
+}, {
+  timestamps: false // 👈 Evita los errores con createdAt/updatedAt
 });
+
+
 
 export default Rol;

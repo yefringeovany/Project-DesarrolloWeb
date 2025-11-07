@@ -1,6 +1,7 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "./index.js";
 import Rol from "./Rol.js";
+import Clinica from "./Clinica.js";
 
 const Usuario = sequelize.define("Usuario", {
   id: {
@@ -21,10 +22,25 @@ const Usuario = sequelize.define("Usuario", {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  usuarioActivo: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: true,
+  },
+  ultimoAcceso: {
+    type: DataTypes.DATE,
+    allowNull: true,
+  },
+  clinicaAsignadaId: {
+    type: DataTypes.INTEGER,
+    allowNull: true, // Solo obligatorio si es médico
+  },
 });
 
-// RELACIÓN: Un usuario pertenece a un rol
+// Relaciones
 Usuario.belongsTo(Rol, { foreignKey: "rolId" });
 Rol.hasMany(Usuario, { foreignKey: "rolId" });
+
+Usuario.belongsTo(Clinica, { foreignKey: "clinicaAsignadaId" });
+Clinica.hasMany(Usuario, { foreignKey: "clinicaAsignadaId" });
 
 export default Usuario;

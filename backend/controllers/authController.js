@@ -8,21 +8,40 @@ import { generarToken } from "../utils/generateToken.js";
 // ==========================
 export const register = async (req, res) => {
   try {
-    const { nombre, email, password, rolId } = req.body;
+    const { nombre, email, password, rolId, clinicaAsignadaId } = req.body;
 
+    // Verificar si el correo ya existe
     const existeUsuario = await Usuario.findOne({ where: { email } });
     if (existeUsuario) {
       return res.status(400).json({ mensaje: "El correo ya está registrado." });
     }
 
-    const passwordHash = await generarHash(password);
+    // Buscar el rol para validar
+    const rol = await Rol.findByPk(rolId);
+    if (!rol) {
+      return res.status(400).json({ mensaje: "Rol no válido." });
+    }
 
-    const nuevoUsuario = await Usuario.create({
+    // Si el rol es "Medico", debe tener una clínica asignada
+    if (rol.nombre_rol.toLowerCase() === "medico" && !clinicaAsignadaId) {
+      return res.status(400).json({
+        mensaje: "Debe asignarse una clínica al registrar un médico.",
+      });
+    }
+
+    // Preparar los datos a registrar
+    const datosUsuario = {
       nombre,
       email,
-      password: passwordHash,
+      password: await generarHash(password),
       rolId,
-    });
+    };
+
+    if (rol.nombre_rol.toLowerCase() === "medico") {
+      datosUsuario.clinicaAsignadaId = clinicaAsignadaId;
+    }
+
+    const nuevoUsuario = await Usuario.create(datosUsuario);
 
     res.status(201).json({
       mensaje: "Usuario registrado exitosamente.",
@@ -30,7 +49,8 @@ export const register = async (req, res) => {
         id: nuevoUsuario.id,
         nombre: nuevoUsuario.nombre,
         email: nuevoUsuario.email,
-        rolId: nuevoUsuario.rolId,
+        rol: rol.nombre_rol,
+        clinicaAsignadaId: nuevoUsuario.clinicaAsignadaId || null,
       },
     });
   } catch (error) {

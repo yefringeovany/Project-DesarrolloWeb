@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 
 const Register = () => {
@@ -6,14 +6,29 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rolId, setRolId] = useState("");
+  const [clinicaAsignadaId, setClinicaAsignadaId] = useState("");
+  const [clinicas, setClinicas] = useState([]);
   const [mensaje, setMensaje] = useState("");
   const navigate = useNavigate();
+
+  useEffect(() => {
+  fetch("http://localhost:5000/api/clinicas")
+    .then((res) => res.json())
+    .then((data) => {
+      if (Array.isArray(data.clinicas)) {
+        setClinicas(data.clinicas);
+      } else {
+        setClinicas([]);
+      }
+    })
+    .catch(() => setClinicas([]));
+}, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMensaje("");
 
-    try {
+ try {
       const res = await fetch("http://localhost:5000/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -22,9 +37,11 @@ const Register = () => {
           email,
           password,
           rolId: parseInt(rolId),
+          // ✅ Solo los médicos (rolId = 3) deben tener clínica asignada
+          clinicaAsignadaId:
+            rolId === "3" ? parseInt(clinicaAsignadaId) : null,
         }),
       });
-
       const data = await res.json();
 
       if (!res.ok) {
@@ -50,7 +67,7 @@ const Register = () => {
             <input
               type="text"
               className="form-control"
-              placeholder="Ej: Dr. Manu"
+              placeholder="Ej: Dr. Pérez"
               value={nombre}
               onChange={(e) => setNombre(e.target.value)}
               required
@@ -82,7 +99,7 @@ const Register = () => {
           </div>
 
           <div className="mb-3">
-            <label className="form-label fw-semibold">Selecciona tu rol</label>
+            <label className="form-label fw-semibold">Rol</label>
             <select
               className="form-select"
               value={rolId}
@@ -91,10 +108,29 @@ const Register = () => {
             >
               <option value="">Seleccionar rol...</option>
               <option value="1">Administrador</option>
-              <option value="2">Médico</option>
-              <option value="3">Enfermero</option>
+              <option value="2">Enfermero</option>
+              <option value="3">Medico</option>
             </select>
           </div>
+
+          {rolId === "3" && (
+            <div className="mb-3">
+              <label className="form-label fw-semibold">Clínica asignada</label>
+              <select
+                className="form-select"
+                value={clinicaAsignadaId}
+                onChange={(e) => setClinicaAsignadaId(e.target.value)}
+                required
+              >
+                <option value="">Seleccionar clínica...</option>
+                {clinicas.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.nombre_clinica}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
           {mensaje && (
             <div
