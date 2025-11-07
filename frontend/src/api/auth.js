@@ -9,11 +9,11 @@ export const login = async (email, password) => {
   return await res.json();
 };
 
-export const register = async (nombre, email, password, rolId, clinicaAsignadaId) => {
+export const register = async (nombre, email, password, rolId) => {
   const res = await fetch(`${API_URL}/auth/register`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ nombre, email, password, rolId, clinicaAsignadaId  }),
+    body: JSON.stringify({ nombre, email, password, rolId }),
   });
   return await res.json();
 };
