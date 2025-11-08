@@ -12,8 +12,9 @@ import {
   verificarToken, 
   medicoOEnfermero,
   personalAutorizado,
-  verificarClinicaAsignada
-} from "../middleware/authMiddleware.js";
+  verificarClinicaAsignada,
+  verificarRoles // <-- AGREGAR ESTO
+} from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
@@ -26,11 +27,11 @@ router.get("/pantalla", obtenerTurnosPantalla);
 // Rutas protegidas
 // ==========================
 
-// Crear turno (solo médico/enfermero)
+// Crear turno (solo enfermero/admin)
 router.post(
   "/",
   verificarToken,
-  medicoOEnfermero,
+  verificarRoles("enfermero", "admin"), // <- Solo estos roles
   crearTurno
 );
 

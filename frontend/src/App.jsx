@@ -6,6 +6,8 @@ import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Pacientes from "./pages/Pacientes";
 import Clinicas from "./pages/Clinicas";
+import Turnos from "./pages/Turnos";
+import PantallaPublica from "./pages/PantallaPublica";
 
 function App() {
   return (
@@ -43,6 +45,15 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/turnos"
+            element={
+              <ProtectedRoute>
+                <Turnos />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/pantalla" element={<PantallaPublica />} />
         </Routes>
       </Router>
     </AuthProvider>

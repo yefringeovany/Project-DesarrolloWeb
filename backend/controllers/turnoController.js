@@ -14,10 +14,11 @@ export const crearTurno = async (req, res) => {
     const { pacienteId, clinicaId, motivo, prioridad = 'normal' } = req.body;
     const usuarioId = req.usuario.id; // Del middleware de autenticación
 
-    // Validar que el usuario tenga rol de médico o enfermero
-    if (!['medico', 'enfermero', 'admin'].includes(req.usuario.Rol.nombre_rol)) {
+    // ✅ SOLO enfermero y admin pueden asignar turnos
+    const rolUsuario = req.usuario.Rol.nombre_rol.toLowerCase();
+    if (!['enfermero', 'admin'].includes(rolUsuario)) {
       return res.status(403).json({ 
-        mensaje: "No tiene permisos para asignar turnos." 
+        mensaje: "Solo enfermero o administrador pueden asignar turnos." 
       });
     }
 
@@ -74,16 +75,32 @@ export const crearTurno = async (req, res) => {
       ]
     });
 
-    // Notificar en tiempo real
+    // 🔥 EMISIÓN DE EVENTOS WEBSOCKET EN TIEMPO REAL
+    console.log('📡 [WebSocket] Emitiendo evento turno:nuevo', {
+      turnoId: turnoCompleto.id,
+      numeroTurno: turnoCompleto.numeroTurno,
+      clinicaId: turnoCompleto.clinicaId,
+      paciente: turnoCompleto.paciente?.nombre,
+      timestamp: new Date().toISOString()
+    });
+
+    // 1️⃣ Broadcast GLOBAL - Para dashboards generales y administradores
     io.emit('turno:nuevo', turnoCompleto);
+    
+    // 2️⃣ Broadcast ESPECÍFICO - Solo para usuarios conectados a esta clínica
     io.to(`clinica-${clinicaId}`).emit('turno:actualizado', turnoCompleto);
+    
+    // 3️⃣ Broadcast PANTALLA PÚBLICA - Para displays públicos
+    io.to('pantalla-publica').emit('turno:nuevo', turnoCompleto);
+
+    console.log('✅ [WebSocket] Eventos emitidos exitosamente');
 
     res.status(201).json({
       mensaje: "Turno creado exitosamente.",
       turno: turnoCompleto
     });
   } catch (error) {
-    console.error("Error al crear turno:", error);
+    console.error("❌ Error al crear turno:", error);
     res.status(500).json({ mensaje: "Error interno del servidor." });
   }
 };
@@ -188,20 +205,57 @@ export const cambiarEstadoTurno = async (req, res) => {
     const turnoActualizado = await Turno.findByPk(id, {
       include: [
         { model: Paciente, as: 'paciente' },
-        { model: Clinica, as: 'clinica' }
+        { model: Clinica, as: 'clinica' },
+        { model: Usuario, as: 'atendidoPor', attributes: ['id', 'nombre'] }
       ]
     });
 
-    // Notificar cambio en tiempo real
-    io.emit('turno:cambioEstado', turnoActualizado);
+    // 🔥 EMISIÓN DE EVENTOS WEBSOCKET PARA CAMBIO DE ESTADO
+    console.log('📡 [WebSocket] Emitiendo evento turno:cambioEstado', {
+      turnoId: turnoActualizado.id,
+      numeroTurno: turnoActualizado.numeroTurno,
+      estadoAnterior,
+      estadoNuevo: nuevoEstado,
+      clinicaId: turno.clinicaId,
+      paciente: turnoActualizado.paciente?.nombre,
+      timestamp: new Date().toISOString()
+    });
+
+    // 1️⃣ Broadcast GLOBAL con información detallada del cambio
+    io.emit('turno:cambioEstado', {
+      ...turnoActualizado.toJSON(),
+      estadoAnterior,
+      estadoNuevo: nuevoEstado,
+      cambioTimestamp: new Date().toISOString()
+    });
+    
+    // 2️⃣ Broadcast ESPECÍFICO para la clínica
     io.to(`clinica-${turno.clinicaId}`).emit('turno:actualizado', turnoActualizado);
+    
+    // 3️⃣ Broadcast para PANTALLAS PÚBLICAS (solo estados relevantes)
+    if (['llamando', 'atendiendo'].includes(nuevoEstado)) {
+      io.to('pantalla-publica').emit('turno:actualizado', turnoActualizado);
+      console.log('📺 [WebSocket] Evento enviado a pantalla pública');
+    }
+
+    // 4️⃣ Si el turno está siendo llamado, emitir evento especial
+    if (nuevoEstado === 'llamando') {
+      io.emit('turno:llamando', {
+        turno: turnoActualizado,
+        mensaje: `Turno ${turnoActualizado.numeroTurno} está siendo llamado`,
+        prioridad: turnoActualizado.prioridad
+      });
+      console.log('🔔 [WebSocket] Evento turno:llamando emitido');
+    }
+
+    console.log('✅ [WebSocket] Eventos de cambio de estado emitidos exitosamente');
 
     res.json({
       mensaje: "Estado actualizado exitosamente.",
       turno: turnoActualizado
     });
   } catch (error) {
-    console.error("Error al cambiar estado:", error);
+    console.error("❌ Error al cambiar estado:", error);
     res.status(500).json({ mensaje: "Error interno del servidor." });
   }
 };
