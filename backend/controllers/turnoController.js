@@ -4,7 +4,7 @@ import Clinica from "../models/Clinica.js";
 import Usuario from "../models/Usuario.js";
 import HistorialTurno from "../models/HistorialTurno.js";
 import { Op } from "sequelize";
-import { io } from "../index.js"; // Socket.io instance
+import { io } from "../index.js";
 
 // ==========================
 // Crear nuevo turno (preclasificación)
@@ -12,7 +12,7 @@ import { io } from "../index.js"; // Socket.io instance
 export const crearTurno = async (req, res) => {
   try {
     const { pacienteId, clinicaId, motivo, prioridad = 'normal' } = req.body;
-    const usuarioId = req.usuario.id; // Del middleware de autenticación
+    const usuarioId = req.usuario.id;
 
     // ✅ SOLO enfermero y admin pueden asignar turnos
     const rolUsuario = req.usuario.Rol.nombre_rol.toLowerCase();
@@ -36,6 +36,8 @@ export const crearTurno = async (req, res) => {
 
     // Generar número de turno único del día
     const hoy = new Date().toISOString().split('T')[0];
+    
+    // 🔧 CORRECCIÓN: Contar turnos del día actual para esta clínica
     const turnosHoy = await Turno.count({
       where: {
         clinicaId,
@@ -43,7 +45,28 @@ export const crearTurno = async (req, res) => {
       }
     });
 
-    const numeroTurno = `${clinica.nombre_clinica.substring(0, 3).toUpperCase()}-${String(turnosHoy + 1).padStart(3, '0')}`;
+    // 🔧 CORRECCIÓN: Generar prefijo limpio sin caracteres especiales
+    // Remover acentos y caracteres especiales, tomar primeras 3 letras
+    const prefijoClinica = clinica.nombre_clinica
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "") // Remover acentos
+      .replace(/[^a-zA-Z0-9]/g, "") // Remover caracteres especiales
+      .substring(0, 3)
+      .toUpperCase()
+      .padEnd(3, 'X'); // Rellenar con X si es muy corto
+
+    // 🔧 CORRECCIÓN: Incluir el ID de la clínica y fecha para garantizar unicidad
+    const numeroSecuencial = turnosHoy + 1;
+    const fechaCorta = hoy.split('-').slice(1).join(''); // MMDD (ej: 1109)
+    const numeroTurno = `${prefijoClinica}-${clinicaId}-${fechaCorta}-${String(numeroSecuencial).padStart(3, '0')}`;
+    
+    console.log('🎫 Generando número de turno:', {
+      clinica: clinica.nombre_clinica,
+      prefijo: prefijoClinica,
+      turnosHoy,
+      numeroSecuencial,
+      numeroTurno
+    });
 
     // Crear turno
     const nuevoTurno = await Turno.create({
@@ -101,7 +124,19 @@ export const crearTurno = async (req, res) => {
     });
   } catch (error) {
     console.error("❌ Error al crear turno:", error);
-    res.status(500).json({ mensaje: "Error interno del servidor." });
+    
+    // 🔧 CORRECCIÓN: Manejo específico de error de unicidad
+    if (error.name === 'SequelizeUniqueConstraintError') {
+      return res.status(409).json({ 
+        mensaje: "Error al generar número de turno único. Por favor, intente nuevamente.",
+        detalle: "El número de turno ya existe. Esto puede ocurrir si múltiples turnos se crean simultáneamente."
+      });
+    }
+    
+    res.status(500).json({ 
+      mensaje: "Error interno del servidor.",
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 };
 
@@ -136,7 +171,7 @@ export const obtenerColaPorClinica = async (req, res) => {
         }
       ],
       order: [
-        ['prioridad', 'DESC'], // Emergencias primero
+        ['prioridad', 'DESC'],
         ['horaRegistro', 'ASC']
       ]
     });
@@ -237,6 +272,12 @@ export const cambiarEstadoTurno = async (req, res) => {
       io.to('pantalla-publica').emit('turno:actualizado', turnoActualizado);
       console.log('📺 [WebSocket] Evento enviado a pantalla pública');
     }
+    
+    // 🔧 CORRECCIÓN: Emitir evento de salida cuando se finaliza/cancela/ausenta
+    if (['finalizado', 'ausente', 'cancelado'].includes(nuevoEstado)) {
+      io.to('pantalla-publica').emit('turno:actualizado', turnoActualizado);
+      console.log('📺 [WebSocket] Turno removido de pantalla pública');
+    }
 
     // 4️⃣ Si el turno está siendo llamado, emitir evento especial
     if (nuevoEstado === 'llamando') {
@@ -290,6 +331,39 @@ export const obtenerSiguienteTurno = async (req, res) => {
     res.json({ turno: siguienteTurno });
   } catch (error) {
     console.error("Error al obtener siguiente turno:", error);
+    res.status(500).json({ mensaje: "Error interno del servidor." });
+  }
+};
+
+// ==========================
+// Obtener Turnos En Espera
+// ==========================
+export const obtenerTurnosEnEspera = async (req, res) => {
+  try {
+    const { clinicaId } = req.query;
+    const hoy = new Date().toISOString().split('T')[0];
+
+    const whereClause = { fecha: hoy, estado: 'espera' };
+    if (clinicaId) {
+      whereClause.clinicaId = clinicaId;
+    }
+
+    const turnos = await Turno.findAll({
+      where: whereClause,
+      include: [
+        { model: Paciente, as: 'paciente', attributes: ['nombre'] },
+        { model: Clinica, as: 'clinica', attributes: ['id', 'nombre_clinica'] }
+      ],
+      order: [
+        ['prioridad', 'DESC'],
+        ['horaRegistro', 'ASC']
+      ],
+      limit: 10
+    });
+
+    res.json({ turnos });
+  } catch (error) {
+    console.error("Error:", error);
     res.status(500).json({ mensaje: "Error interno del servidor." });
   }
 };
@@ -398,7 +472,7 @@ export const obtenerTurnosPantalla = async (req, res) => {
         { 
           model: Paciente, 
           as: 'paciente',
-          attributes: ['nombre'] // Solo nombre para pantalla pública
+          attributes: ['nombre']
         },
         {
           model: Clinica,
