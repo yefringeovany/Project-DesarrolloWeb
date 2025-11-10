@@ -1,7 +1,21 @@
 import { useState, useEffect } from "react";
-import { AlertCircle, CheckCircle, Clock, Building2, Users, FileText } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
+import { puedeCrearTurnos } from "../utils/roles";
+import {
+  AlertCircle,
+  CheckCircle,
+  Clock,
+  Building2,
+  Users,
+  FileText,
+} from "lucide-react";
 
 const CrearTurno = () => {
+  const { usuario } = useAuth();
+
+  // ================================
+  // Estado y lógica del formulario
+  // ================================
   const [formData, setFormData] = useState({
     pacienteId: "",
     clinicaId: "",
@@ -18,16 +32,19 @@ const CrearTurno = () => {
   const API_URL = "http://localhost:5000/api";
   const token = localStorage.getItem("token");
 
-  useEffect(() => {
-    cargarDatos();
-  }, []);
-
+  // ================================
+  // Cargar datos iniciales
+  // ================================
   const cargarDatos = async () => {
     setLoadingData(true);
     try {
       const [resPacientes, resClinicas] = await Promise.all([
-        fetch(`${API_URL}/pacientes`, { headers: { Authorization: `Bearer ${token}` } }),
-        fetch(`${API_URL}/clinicas`, { headers: { Authorization: `Bearer ${token}` } }),
+        fetch(`${API_URL}/pacientes`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+        fetch(`${API_URL}/clinicas`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
       ]);
 
       const dataPacientes = await resPacientes.json();
@@ -41,6 +58,10 @@ const CrearTurno = () => {
       setLoadingData(false);
     }
   };
+
+  useEffect(() => {
+    cargarDatos();
+  }, []);
 
   const mostrarMensaje = (tipo, texto) => {
     setMensaje({ tipo, texto });
@@ -75,7 +96,12 @@ const CrearTurno = () => {
 
       setTurnoCreado(data.turno);
       mostrarMensaje("success", "Turno creado exitosamente ✅");
-      setFormData({ pacienteId: "", clinicaId: "", motivo: "", prioridad: "normal" });
+      setFormData({
+        pacienteId: "",
+        clinicaId: "",
+        motivo: "",
+        prioridad: "normal",
+      });
 
       setTimeout(() => setTurnoCreado(null), 5000);
     } catch (error) {
@@ -85,6 +111,28 @@ const CrearTurno = () => {
     }
   };
 
+  // ================================
+  // 🚫 Validación de permisos
+  // ================================
+  if (!puedeCrearTurnos(usuario?.rol)) {
+    return (
+      <div className="vh-100 d-flex justify-content-center align-items-center bg-light">
+        <div className="text-center">
+          <div className="alert alert-danger shadow-lg">
+            <h4 className="fw-bold mb-2">🚫 Acceso Denegado</h4>
+            <p>No tienes permisos para crear turnos.</p>
+            <a href="/dashboard" className="btn btn-primary mt-3">
+              Volver al Panel Principal
+            </a>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ================================
+  // Pantalla de carga
+  // ================================
   if (loadingData) {
     return (
       <div className="vh-100 d-flex justify-content-center align-items-center bg-light">
@@ -96,6 +144,9 @@ const CrearTurno = () => {
     );
   }
 
+  // ================================
+  // Vista principal del formulario
+  // ================================
   return (
     <div className="container py-5">
       <div className="card shadow-lg border-0">
@@ -187,7 +238,7 @@ const CrearTurno = () => {
               <label className="form-label fw-semibold">
                 <AlertCircle className="me-1" /> Nivel de Prioridad
               </label>
-              <div className="d-flex gap-2">
+              <div className="d-flex gap-2 flex-wrap">
                 {["normal", "urgente", "emergencia"].map((p) => (
                   <button
                     key={p}
@@ -224,7 +275,9 @@ const CrearTurno = () => {
                 value={formData.motivo}
                 onChange={(e) => handleChange("motivo", e.target.value)}
               />
-              <small className="text-muted">{formData.motivo.length}/500 caracteres</small>
+              <small className="text-muted">
+                {formData.motivo.length}/500 caracteres
+              </small>
             </div>
 
             <div className="d-flex justify-content-end gap-2">
@@ -232,7 +285,12 @@ const CrearTurno = () => {
                 type="button"
                 className="btn btn-outline-secondary"
                 onClick={() =>
-                  setFormData({ pacienteId: "", clinicaId: "", motivo: "", prioridad: "normal" })
+                  setFormData({
+                    pacienteId: "",
+                    clinicaId: "",
+                    motivo: "",
+                    prioridad: "normal",
+                  })
                 }
               >
                 Limpiar
