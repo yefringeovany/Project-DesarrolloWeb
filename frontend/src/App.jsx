@@ -8,6 +8,7 @@ import Pacientes from "./pages/Pacientes";
 import Clinicas from "./pages/Clinicas";
 import Turnos from "./pages/Turnos";
 import PantallaPublica from "./pages/PantallaPublica";
+import CrearTurno from "./pages/CrearTurno"; // ✅ Importar el nuevo componente
 
 function App() {
   return (
@@ -29,6 +30,8 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          {/* Pacientes */}
           <Route
             path="/pacientes"
             element={
@@ -37,6 +40,8 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          {/* Clínicas */}
           <Route
             path="/clinicas"
             element={
@@ -45,6 +50,8 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          {/* Turnos */}
           <Route
             path="/turnos"
             element={
@@ -53,6 +60,18 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          {/* ✅ Nueva ruta: Crear Turno */}
+          <Route
+            path="/crear-turno"
+            element={
+              <ProtectedRoute>
+                <CrearTurno />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Pantalla pública */}
           <Route path="/pantalla" element={<PantallaPublica />} />
         </Routes>
       </Router>
