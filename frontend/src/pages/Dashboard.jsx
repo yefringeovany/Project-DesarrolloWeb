@@ -1,103 +1,292 @@
-import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 import {
-  puedeGestionarPacientes,
-  puedeGestionarClinicas,
-  puedeCrearTurnos,
-} from "../utils/roles";
+  Users,
+  Building2,
+  Clock,
+  FileText,
+  Activity,
+  BarChart3,
+  LogOut
+} from "lucide-react";
 
 const Dashboard = () => {
-  const { usuario, logoutUser } = useAuth();
+  const { usuario, cerrarSesion } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    cerrarSesion();
+    navigate("/");
+  };
+
+  // Verificar rol para mostrar opciones específicas
+  const esAdmin = usuario?.rol?.toLowerCase() === "admin";
+  const esEnfermero = usuario?.rol?.toLowerCase() === "enfermero";
+  const esMedico = usuario?.rol?.toLowerCase() === "medico";
 
   return (
-    <div className="min-vh-100 bg-light d-flex flex-column">
+    <div className="min-vh-100 bg-light">
       {/* Navbar */}
-      <nav className="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
-        <div className="container">
-          <span className="navbar-brand fw-bold">🏥 Sistema de Gestión Médica</span>
-          <div className="d-flex align-items-center">
-            <span className="text-white me-3">
-              👋 Hola, <strong>{usuario?.nombre}</strong> ({usuario?.rol})
+      <nav className="navbar navbar-dark bg-primary shadow">
+        <div className="container-fluid">
+          <span className="navbar-brand mb-0 h1">
+            🏥 Sistema de Gestión de Turnos
+          </span>
+          <div className="d-flex align-items-center gap-3">
+            <span className="text-white">
+              👤 {usuario?.nombre} ({usuario?.rol})
             </span>
-            <button
-              className="btn btn-outline-light btn-sm"
-              onClick={logoutUser}
-            >
-              <i className="bi bi-box-arrow-right me-1"></i> Cerrar sesión
+            <button className="btn btn-outline-light btn-sm" onClick={handleLogout}>
+              <LogOut size={18} className="me-1" style={{ display: 'inline-block' }} />
+              Salir
             </button>
           </div>
         </div>
       </nav>
 
       {/* Contenido principal */}
-      <div className="container my-5 flex-grow-1">
-        <div className="text-center mb-4">
-          <h2 className="fw-bold text-primary">Panel Principal</h2>
-          <p className="text-muted">
-            Accede a las secciones según tus permisos de usuario
+      <div className="container py-5">
+        <div className="text-center mb-5">
+          <h1 className="display-4 fw-bold text-primary">
+            Bienvenido, {usuario?.nombre}
+          </h1>
+          <p className="lead text-muted">
+            Panel de control - Rol: <span className="badge bg-primary">{usuario?.rol}</span>
           </p>
         </div>
 
-        <div className="row g-4 justify-content-center">
-          {/* Pacientes */}
-          {puedeGestionarPacientes(usuario.rol) && (
-            <div className="col-md-4">
-              <div className="card border-0 shadow-lg h-100">
-                <div className="card-body text-center">
-                  <div className="mb-3 text-success">
-                    <i className="bi bi-people-fill" style={{ fontSize: "3rem" }}></i>
+        {/* Cards de acceso rápido */}
+        <div className="row g-4">
+          {/* MÉDICO - Vista específica */}
+          {esMedico && (
+            <>
+              <div className="col-md-6">
+                <div
+                  className="card shadow-lg border-0 h-100 hover-card"
+                  onClick={() => navigate("/mi-cola")}
+                  style={{ cursor: "pointer" }}
+                >
+                  <div className="card-body text-center p-5">
+                    <div className="mb-4">
+                      <Activity size={64} className="text-primary" />
+                    </div>
+                    <h3 className="card-title">Mi Cola de Pacientes</h3>
+                    <p className="card-text text-muted">
+                      Ver y gestionar tus pacientes en espera
+                    </p>
+                    <span className="badge bg-primary px-3 py-2">
+                      Acceso Directo
+                    </span>
                   </div>
-                  <h5 className="fw-bold">Gestión de Pacientes</h5>
-                  <Link to="/pacientes" className="btn btn-success mt-2">
-                    <i className="bi bi-folder2-open me-2"></i> Ir
-                  </Link>
                 </div>
               </div>
-            </div>
+
+              <div className="col-md-6">
+                <div
+                  className="card shadow-lg border-0 h-100 hover-card"
+                  onClick={() => navigate("/pantalla")}
+                  style={{ cursor: "pointer" }}
+                >
+                  <div className="card-body text-center p-5">
+                    <div className="mb-4">
+                      <BarChart3 size={64} className="text-info" />
+                    </div>
+                    <h3 className="card-title">Pantalla Pública</h3>
+                    <p className="card-text text-muted">
+                      Ver tablero de turnos en tiempo real
+                    </p>
+                    <span className="badge bg-info px-3 py-2">
+                      Visualización
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </>
           )}
 
-          {/* Clínicas */}
-          {puedeGestionarClinicas(usuario.rol) && (
-            <div className="col-md-4">
-              <div className="card border-0 shadow-lg h-100">
-                <div className="card-body text-center">
-                  <div className="mb-3 text-info">
-                    <i className="bi bi-hospital" style={{ fontSize: "3rem" }}></i>
+          {/* ENFERMERO - Vista específica */}
+          {esEnfermero && (
+            <>
+              <div className="col-md-4">
+                <div
+                  className="card shadow-lg border-0 h-100 hover-card"
+                  onClick={() => navigate("/crear-turno")}
+                  style={{ cursor: "pointer" }}
+                >
+                  <div className="card-body text-center p-4">
+                    <div className="mb-3">
+                      <Clock size={48} className="text-success" />
+                    </div>
+                    <h4 className="card-title">Crear Turno</h4>
+                    <p className="card-text text-muted">
+                      Registrar nuevo turno para pacientes
+                    </p>
                   </div>
-                  <h5 className="fw-bold">Gestión de Clínicas</h5>
-                  <Link to="/clinicas" className="btn btn-info mt-2 text-white">
-                    <i className="bi bi-building-add me-2"></i> Ir
-                  </Link>
                 </div>
               </div>
-            </div>
+
+              <div className="col-md-4">
+                <div
+                  className="card shadow-lg border-0 h-100 hover-card"
+                  onClick={() => navigate("/pacientes")}
+                  style={{ cursor: "pointer" }}
+                >
+                  <div className="card-body text-center p-4">
+                    <div className="mb-3">
+                      <Users size={48} className="text-primary" />
+                    </div>
+                    <h4 className="card-title">Pacientes</h4>
+                    <p className="card-text text-muted">
+                      Gestionar información de pacientes
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="col-md-4">
+                <div
+                  className="card shadow-lg border-0 h-100 hover-card"
+                  onClick={() => navigate("/turnos")}
+                  style={{ cursor: "pointer" }}
+                >
+                  <div className="card-body text-center p-4">
+                    <div className="mb-3">
+                      <FileText size={48} className="text-warning" />
+                    </div>
+                    <h4 className="card-title">Gestión de Turnos</h4>
+                    <p className="card-text text-muted">
+                      Administrar cola de turnos
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </>
           )}
 
-          {/* 🕐 Crear Turno */}
-          {puedeCrearTurnos(usuario.rol) && (
-            <div className="col-md-4">
-              <div className="card border-0 shadow-lg h-100">
-                <div className="card-body text-center">
-                  <div className="mb-3 text-primary">
-                    <i className="bi bi-clock-fill" style={{ fontSize: "3rem" }}></i>
+          {/* ADMIN - Acceso completo */}
+          {esAdmin && (
+            <>
+              <div className="col-md-3">
+                <div
+                  className="card shadow-lg border-0 h-100 hover-card"
+                  onClick={() => navigate("/pacientes")}
+                  style={{ cursor: "pointer" }}
+                >
+                  <div className="card-body text-center p-4">
+                    <div className="mb-3">
+                      <Users size={48} className="text-primary" />
+                    </div>
+                    <h5 className="card-title">Pacientes</h5>
+                    <p className="card-text text-muted small">
+                      Gestión de pacientes
+                    </p>
                   </div>
-                  <h5 className="fw-bold">Crear Turno</h5>
-                  <Link to="/crear-turno" className="btn btn-primary mt-2">
-                    <i className="bi bi-plus-circle me-2"></i> Ir
-                  </Link>
+                </div>
+              </div>
+
+              <div className="col-md-3">
+                <div
+                  className="card shadow-lg border-0 h-100 hover-card"
+                  onClick={() => navigate("/clinicas")}
+                  style={{ cursor: "pointer" }}
+                >
+                  <div className="card-body text-center p-4">
+                    <div className="mb-3">
+                      <Building2 size={48} className="text-success" />
+                    </div>
+                    <h5 className="card-title">Clínicas</h5>
+                    <p className="card-text text-muted small">
+                      Administrar clínicas
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="col-md-3">
+                <div
+                  className="card shadow-lg border-0 h-100 hover-card"
+                  onClick={() => navigate("/turnos")}
+                  style={{ cursor: "pointer" }}
+                >
+                  <div className="card-body text-center p-4">
+                    <div className="mb-3">
+                      <FileText size={48} className="text-warning" />
+                    </div>
+                    <h5 className="card-title">Turnos</h5>
+                    <p className="card-text text-muted small">
+                      Gestión de turnos
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="col-md-3">
+                <div
+                  className="card shadow-lg border-0 h-100 hover-card"
+                  onClick={() => navigate("/crear-turno")}
+                  style={{ cursor: "pointer" }}
+                >
+                  <div className="card-body text-center p-4">
+                    <div className="mb-3">
+                      <Clock size={48} className="text-info" />
+                    </div>
+                    <h5 className="card-title">Crear Turno</h5>
+                    <p className="card-text text-muted small">
+                      Nuevo turno
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* Información adicional */}
+        <div className="row mt-5">
+          <div className="col-12">
+            <div className="card shadow-sm">
+              <div className="card-body">
+                <h5 className="card-title">ℹ️ Información del Sistema</h5>
+                <div className="row g-3 mt-2">
+                  <div className="col-md-4">
+                    <div className="border rounded p-3 bg-light">
+                      <strong>👤 Usuario:</strong> {usuario?.nombre}
+                    </div>
+                  </div>
+                  <div className="col-md-4">
+                    <div className="border rounded p-3 bg-light">
+                      <strong>🎭 Rol:</strong> {usuario?.rol}
+                    </div>
+                  </div>
+                  <div className="col-md-4">
+                    <div className="border rounded p-3 bg-light">
+                      <strong>📧 Email:</strong> {usuario?.email}
+                    </div>
+                  </div>
+                  {usuario?.clinicaAsignadaId && (
+                    <div className="col-12">
+                      <div className="border rounded p-3 bg-primary bg-opacity-10">
+                        <strong>🏥 Clínica Asignada:</strong> {usuario?.Clinica?.nombre_clinica || `ID: ${usuario?.clinicaAsignadaId}`}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
-          )}
+          </div>
         </div>
       </div>
 
-      {/* Footer */}
-      <footer className="bg-primary text-white text-center py-3 mt-auto">
-        <small>
-          © {new Date().getFullYear()} Sistema Médico - Todos los derechos reservados
-        </small>
-      </footer>
+      {/* Estilos personalizados */}
+      <style>{`
+        .hover-card {
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .hover-card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
+        }
+      `}</style>
     </div>
   );
 };

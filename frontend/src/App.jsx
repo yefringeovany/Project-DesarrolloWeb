@@ -8,7 +8,8 @@ import Pacientes from "./pages/Pacientes";
 import Clinicas from "./pages/Clinicas";
 import Turnos from "./pages/Turnos";
 import PantallaPublica from "./pages/PantallaPublica";
-import CrearTurno from "./pages/CrearTurno"; // ✅ Importar el nuevo componente
+import CrearTurno from "./pages/CrearTurno";
+import ColaMedico from "./pages/ColaMedico"; // 👈 asegúrate de que el archivo exista
 
 function App() {
   return (
@@ -61,12 +62,22 @@ function App() {
             }
           />
 
-          {/* ✅ Nueva ruta: Crear Turno */}
+          {/* Crear Turno */}
           <Route
             path="/crear-turno"
             element={
               <ProtectedRoute>
                 <CrearTurno />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Mi Cola (médico) */}
+          <Route
+            path="/mi-cola"
+            element={
+              <ProtectedRoute>
+                <ColaMedico />
               </ProtectedRoute>
             }
           />

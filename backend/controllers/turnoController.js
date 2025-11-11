@@ -37,7 +37,6 @@ export const crearTurno = async (req, res) => {
     // Generar número de turno único del día
     const hoy = new Date().toISOString().split('T')[0];
     
-    // 🔧 CORRECCIÓN: Contar turnos del día actual para esta clínica
     const turnosHoy = await Turno.count({
       where: {
         clinicaId,
@@ -45,19 +44,16 @@ export const crearTurno = async (req, res) => {
       }
     });
 
-    // 🔧 CORRECCIÓN: Generar prefijo limpio sin caracteres especiales
-    // Remover acentos y caracteres especiales, tomar primeras 3 letras
     const prefijoClinica = clinica.nombre_clinica
       .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "") // Remover acentos
-      .replace(/[^a-zA-Z0-9]/g, "") // Remover caracteres especiales
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-zA-Z0-9]/g, "")
       .substring(0, 3)
       .toUpperCase()
-      .padEnd(3, 'X'); // Rellenar con X si es muy corto
+      .padEnd(3, 'X');
 
-    // 🔧 CORRECCIÓN: Incluir el ID de la clínica y fecha para garantizar unicidad
     const numeroSecuencial = turnosHoy + 1;
-    const fechaCorta = hoy.split('-').slice(1).join(''); // MMDD (ej: 1109)
+    const fechaCorta = hoy.split('-').slice(1).join('');
     const numeroTurno = `${prefijoClinica}-${clinicaId}-${fechaCorta}-${String(numeroSecuencial).padStart(3, '0')}`;
     
     console.log('🎫 Generando número de turno:', {
@@ -98,25 +94,11 @@ export const crearTurno = async (req, res) => {
       ]
     });
 
-    // 🔥 EMISIÓN DE EVENTOS WEBSOCKET EN TIEMPO REAL
-    console.log('📡 [WebSocket] Emitiendo evento turno:nuevo', {
-      turnoId: turnoCompleto.id,
-      numeroTurno: turnoCompleto.numeroTurno,
-      clinicaId: turnoCompleto.clinicaId,
-      paciente: turnoCompleto.paciente?.nombre,
-      timestamp: new Date().toISOString()
-    });
-
-    // 1️⃣ Broadcast GLOBAL - Para dashboards generales y administradores
+    // 🔥 EMISIÓN DE EVENTOS WEBSOCKET
+    console.log('📡 [WebSocket] Emitiendo evento turno:nuevo');
     io.emit('turno:nuevo', turnoCompleto);
-    
-    // 2️⃣ Broadcast ESPECÍFICO - Solo para usuarios conectados a esta clínica
     io.to(`clinica-${clinicaId}`).emit('turno:actualizado', turnoCompleto);
-    
-    // 3️⃣ Broadcast PANTALLA PÚBLICA - Para displays públicos
     io.to('pantalla-publica').emit('turno:nuevo', turnoCompleto);
-
-    console.log('✅ [WebSocket] Eventos emitidos exitosamente');
 
     res.status(201).json({
       mensaje: "Turno creado exitosamente.",
@@ -125,18 +107,13 @@ export const crearTurno = async (req, res) => {
   } catch (error) {
     console.error("❌ Error al crear turno:", error);
     
-    // 🔧 CORRECCIÓN: Manejo específico de error de unicidad
     if (error.name === 'SequelizeUniqueConstraintError') {
       return res.status(409).json({ 
-        mensaje: "Error al generar número de turno único. Por favor, intente nuevamente.",
-        detalle: "El número de turno ya existe. Esto puede ocurrir si múltiples turnos se crean simultáneamente."
+        mensaje: "Error al generar número de turno único. Por favor, intente nuevamente."
       });
     }
     
-    res.status(500).json({ 
-      mensaje: "Error interno del servidor.",
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined
-    });
+    res.status(500).json({ mensaje: "Error interno del servidor." });
   }
 };
 
@@ -245,18 +222,9 @@ export const cambiarEstadoTurno = async (req, res) => {
       ]
     });
 
-    // 🔥 EMISIÓN DE EVENTOS WEBSOCKET PARA CAMBIO DE ESTADO
-    console.log('📡 [WebSocket] Emitiendo evento turno:cambioEstado', {
-      turnoId: turnoActualizado.id,
-      numeroTurno: turnoActualizado.numeroTurno,
-      estadoAnterior,
-      estadoNuevo: nuevoEstado,
-      clinicaId: turno.clinicaId,
-      paciente: turnoActualizado.paciente?.nombre,
-      timestamp: new Date().toISOString()
-    });
+    // 🔥 EMISIÓN DE EVENTOS WEBSOCKET
+    console.log('📡 [WebSocket] Emitiendo evento turno:cambioEstado');
 
-    // 1️⃣ Broadcast GLOBAL con información detallada del cambio
     io.emit('turno:cambioEstado', {
       ...turnoActualizado.toJSON(),
       estadoAnterior,
@@ -264,32 +232,19 @@ export const cambiarEstadoTurno = async (req, res) => {
       cambioTimestamp: new Date().toISOString()
     });
     
-    // 2️⃣ Broadcast ESPECÍFICO para la clínica
     io.to(`clinica-${turno.clinicaId}`).emit('turno:actualizado', turnoActualizado);
     
-    // 3️⃣ Broadcast para PANTALLAS PÚBLICAS (solo estados relevantes)
-    if (['llamando', 'atendiendo'].includes(nuevoEstado)) {
+    if (['llamando', 'atendiendo', 'finalizado', 'ausente', 'cancelado'].includes(nuevoEstado)) {
       io.to('pantalla-publica').emit('turno:actualizado', turnoActualizado);
-      console.log('📺 [WebSocket] Evento enviado a pantalla pública');
     }
     
-    // 🔧 CORRECCIÓN: Emitir evento de salida cuando se finaliza/cancela/ausenta
-    if (['finalizado', 'ausente', 'cancelado'].includes(nuevoEstado)) {
-      io.to('pantalla-publica').emit('turno:actualizado', turnoActualizado);
-      console.log('📺 [WebSocket] Turno removido de pantalla pública');
-    }
-
-    // 4️⃣ Si el turno está siendo llamado, emitir evento especial
     if (nuevoEstado === 'llamando') {
       io.emit('turno:llamando', {
         turno: turnoActualizado,
         mensaje: `Turno ${turnoActualizado.numeroTurno} está siendo llamado`,
         prioridad: turnoActualizado.prioridad
       });
-      console.log('🔔 [WebSocket] Evento turno:llamando emitido');
     }
-
-    console.log('✅ [WebSocket] Eventos de cambio de estado emitidos exitosamente');
 
     res.json({
       mensaje: "Estado actualizado exitosamente.",
@@ -420,7 +375,6 @@ export const obtenerEstadisticasClinica = async (req, res) => {
       tiempoPromedioAtencion: 0
     };
 
-    // Calcular tiempos promedio
     const turnosFinalizados = turnos.filter(t => 
       t.horaInicioAtencion && t.horaFinAtencion
     );
@@ -490,6 +444,342 @@ export const obtenerTurnosPantalla = async (req, res) => {
     res.json({ turnos });
   } catch (error) {
     console.error("Error al obtener turnos para pantalla:", error);
+    res.status(500).json({ mensaje: "Error interno del servidor." });
+  }
+};
+
+// ==========================
+// 👨‍⚕️ FUNCIONES PARA MÉDICOS
+// ==========================
+
+// Obtener cola de turnos para el médico autenticado
+export const obtenerMiColaTurnos = async (req, res) => {
+  try {
+    const usuarioId = req.usuario.id;
+    const clinicaId = req.usuario.clinicaAsignadaId;
+    const { fecha } = req.query;
+
+    const rolUsuario = req.usuario.Rol.nombre_rol.toLowerCase();
+    if (rolUsuario !== 'medico') {
+      return res.status(403).json({ 
+        mensaje: "Solo los médicos pueden acceder a esta función." 
+      });
+    }
+
+    if (!clinicaId) {
+      return res.status(400).json({ 
+        mensaje: "El médico no tiene una clínica asignada." 
+      });
+    }
+
+    const fechaBusqueda = fecha || new Date().toISOString().split('T')[0];
+
+    const turnos = await Turno.findAll({
+      where: {
+        clinicaId,
+        fecha: fechaBusqueda,
+        estado: {
+          [Op.in]: ['espera', 'llamando', 'atendiendo']
+        }
+      },
+      include: [
+        { 
+          model: Paciente, 
+          as: 'paciente',
+          attributes: ['id', 'nombre', 'edad', 'genero', 'dpi']
+        },
+        {
+          model: Clinica,
+          as: 'clinica',
+          attributes: ['id', 'nombre_clinica']
+        },
+        {
+          model: Usuario,
+          as: 'asignadoPor',
+          attributes: ['id', 'nombre']
+        },
+        {
+          model: Usuario,
+          as: 'atendidoPor',
+          attributes: ['id', 'nombre']
+        }
+      ],
+      order: [
+        ['prioridad', 'DESC'],
+        ['horaRegistro', 'ASC']
+      ]
+    });
+
+    const turnosEnEspera = turnos.filter(t => t.estado === 'espera');
+    const turnosLlamando = turnos.filter(t => t.estado === 'llamando');
+    const turnosAtendiendo = turnos.filter(t => t.estado === 'atendiendo');
+
+    res.json({
+      clinicaId,
+      clinicaNombre: req.usuario.Clinica?.nombre_clinica,
+      fecha: fechaBusqueda,
+      total: turnos.length,
+      resumen: {
+        enEspera: turnosEnEspera.length,
+        llamando: turnosLlamando.length,
+        atendiendo: turnosAtendiendo.length
+      },
+      turnos: {
+        enEspera: turnosEnEspera,
+        llamando: turnosLlamando,
+        atendiendo: turnosAtendiendo
+      }
+    });
+  } catch (error) {
+    console.error("Error al obtener cola del médico:", error);
+    res.status(500).json({ mensaje: "Error interno del servidor." });
+  }
+};
+
+// Llamar al siguiente paciente
+export const llamarSiguientePaciente = async (req, res) => {
+  try {
+    const usuarioId = req.usuario.id;
+    const clinicaId = req.usuario.clinicaAsignadaId;
+
+    const rolUsuario = req.usuario.Rol.nombre_rol.toLowerCase();
+    if (rolUsuario !== 'medico') {
+      return res.status(403).json({ 
+        mensaje: "Solo los médicos pueden llamar pacientes." 
+      });
+    }
+
+    if (!clinicaId) {
+      return res.status(400).json({ 
+        mensaje: "El médico no tiene una clínica asignada." 
+      });
+    }
+
+    const hoy = new Date().toISOString().split('T')[0];
+
+    const siguienteTurno = await Turno.findOne({
+      where: {
+        clinicaId,
+        fecha: hoy,
+        estado: 'espera'
+      },
+      include: [
+        { model: Paciente, as: 'paciente' },
+        { model: Clinica, as: 'clinica' }
+      ],
+      order: [
+        ['prioridad', 'DESC'],
+        ['horaRegistro', 'ASC']
+      ]
+    });
+
+    if (!siguienteTurno) {
+      return res.status(404).json({ 
+        mensaje: "No hay turnos en espera en este momento." 
+      });
+    }
+
+    await siguienteTurno.update({
+      estado: 'llamando',
+      horaLlamado: new Date()
+    });
+
+    await HistorialTurno.create({
+      turnoId: siguienteTurno.id,
+      estadoAnterior: 'espera',
+      estadoNuevo: 'llamando',
+      usuarioId,
+      comentario: 'Paciente llamado por el médico'
+    });
+
+    const turnoActualizado = await Turno.findByPk(siguienteTurno.id, {
+      include: [
+        { model: Paciente, as: 'paciente' },
+        { model: Clinica, as: 'clinica' },
+        { model: Usuario, as: 'asignadoPor', attributes: ['id', 'nombre'] }
+      ]
+    });
+
+    // 🔥 WEBSOCKET
+    io.emit('turno:cambioEstado', {
+      ...turnoActualizado.toJSON(),
+      estadoAnterior: 'espera',
+      estadoNuevo: 'llamando'
+    });
+
+    io.to(`clinica-${clinicaId}`).emit('turno:actualizado', turnoActualizado);
+    io.to('pantalla-publica').emit('turno:actualizado', turnoActualizado);
+    io.emit('turno:llamando', {
+      turno: turnoActualizado,
+      mensaje: `Turno ${turnoActualizado.numeroTurno} está siendo llamado`,
+      prioridad: turnoActualizado.prioridad
+    });
+
+    res.json({
+      mensaje: "Paciente llamado exitosamente",
+      turno: turnoActualizado
+    });
+  } catch (error) {
+    console.error("Error al llamar paciente:", error);
+    res.status(500).json({ mensaje: "Error interno del servidor." });
+  }
+};
+
+// Iniciar atención
+export const iniciarAtencion = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const usuarioId = req.usuario.id;
+    const clinicaId = req.usuario.clinicaAsignadaId;
+
+    const rolUsuario = req.usuario.Rol.nombre_rol.toLowerCase();
+    if (rolUsuario !== 'medico') {
+      return res.status(403).json({ 
+        mensaje: "Solo los médicos pueden iniciar atención." 
+      });
+    }
+
+    const turno = await Turno.findByPk(id);
+
+    if (!turno) {
+      return res.status(404).json({ mensaje: "Turno no encontrado." });
+    }
+
+    if (turno.clinicaId !== clinicaId) {
+      return res.status(403).json({ 
+        mensaje: "No puedes atender turnos de otra clínica." 
+      });
+    }
+
+    if (turno.estado !== 'llamando') {
+      return res.status(400).json({ 
+        mensaje: "Solo puedes atender turnos que han sido llamados." 
+      });
+    }
+
+    const estadoAnterior = turno.estado;
+
+    await turno.update({
+      estado: 'atendiendo',
+      horaInicioAtencion: new Date(),
+      atendidoPorId: usuarioId
+    });
+
+    await HistorialTurno.create({
+      turnoId: id,
+      estadoAnterior,
+      estadoNuevo: 'atendiendo',
+      usuarioId,
+      comentario: 'Atención iniciada'
+    });
+
+    const turnoActualizado = await Turno.findByPk(id, {
+      include: [
+        { model: Paciente, as: 'paciente' },
+        { model: Clinica, as: 'clinica' },
+        { model: Usuario, as: 'atendidoPor', attributes: ['id', 'nombre'] }
+      ]
+    });
+
+    // 🔥 WEBSOCKET
+    io.emit('turno:cambioEstado', {
+      ...turnoActualizado.toJSON(),
+      estadoAnterior,
+      estadoNuevo: 'atendiendo'
+    });
+
+    io.to(`clinica-${clinicaId}`).emit('turno:actualizado', turnoActualizado);
+    io.to('pantalla-publica').emit('turno:actualizado', turnoActualizado);
+
+    res.json({
+      mensaje: "Atención iniciada exitosamente",
+      turno: turnoActualizado
+    });
+  } catch (error) {
+    console.error("Error al iniciar atención:", error);
+    res.status(500).json({ mensaje: "Error interno del servidor." });
+  }
+};
+
+// Finalizar atención
+export const finalizarAtencion = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { observaciones } = req.body;
+    const usuarioId = req.usuario.id;
+    const clinicaId = req.usuario.clinicaAsignadaId;
+
+    const rolUsuario = req.usuario.Rol.nombre_rol.toLowerCase();
+    if (rolUsuario !== 'medico') {
+      return res.status(403).json({ 
+        mensaje: "Solo los médicos pueden finalizar atención." 
+      });
+    }
+
+    const turno = await Turno.findByPk(id);
+
+    if (!turno) {
+      return res.status(404).json({ mensaje: "Turno no encontrado." });
+    }
+
+    if (turno.clinicaId !== clinicaId) {
+      return res.status(403).json({ 
+        mensaje: "No puedes finalizar turnos de otra clínica." 
+      });
+    }
+
+    if (turno.estado !== 'atendiendo') {
+      return res.status(400).json({ 
+        mensaje: "Solo puedes finalizar turnos que están siendo atendidos." 
+      });
+    }
+
+    if (turno.atendidoPorId !== usuarioId) {
+      return res.status(403).json({ 
+        mensaje: "Solo puedes finalizar turnos que tú estás atendiendo." 
+      });
+    }
+
+    const estadoAnterior = turno.estado;
+
+    await turno.update({
+      estado: 'finalizado',
+      horaFinAtencion: new Date(),
+      observaciones: observaciones || turno.observaciones
+    });
+
+    await HistorialTurno.create({
+      turnoId: id,
+      estadoAnterior,
+      estadoNuevo: 'finalizado',
+      usuarioId,
+      comentario: observaciones || 'Atención finalizada'
+    });
+
+    const turnoActualizado = await Turno.findByPk(id, {
+      include: [
+        { model: Paciente, as: 'paciente' },
+        { model: Clinica, as: 'clinica' },
+        { model: Usuario, as: 'atendidoPor', attributes: ['id', 'nombre'] }
+      ]
+    });
+
+    // 🔥 WEBSOCKET
+    io.emit('turno:cambioEstado', {
+      ...turnoActualizado.toJSON(),
+      estadoAnterior,
+      estadoNuevo: 'finalizado'
+    });
+
+    io.to(`clinica-${clinicaId}`).emit('turno:actualizado', turnoActualizado);
+    io.to('pantalla-publica').emit('turno:actualizado', turnoActualizado);
+
+    res.json({
+      mensaje: "Atención finalizada exitosamente",
+      turno: turnoActualizado
+    });
+  } catch (error) {
+    console.error("Error al finalizar atención:", error);
     res.status(500).json({ mensaje: "Error interno del servidor." });
   }
 };

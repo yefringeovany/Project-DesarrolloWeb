@@ -6,14 +6,19 @@ import {
   obtenerSiguienteTurno,
   obtenerHistorialTurno,
   obtenerEstadisticasClinica,
-  obtenerTurnosPantalla
+  obtenerTurnosPantalla,
+  // Nuevas funciones para médicos
+  obtenerMiColaTurnos,
+  llamarSiguientePaciente,
+  iniciarAtencion,
+  finalizarAtencion
 } from "../controllers/turnoController.js";
 import { 
   verificarToken, 
   medicoOEnfermero,
   personalAutorizado,
   verificarClinicaAsignada,
-  verificarRoles // <-- AGREGAR ESTO
+  verificarRoles
 } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
@@ -24,16 +29,56 @@ const router = express.Router();
 router.get("/pantalla", obtenerTurnosPantalla);
 
 // ==========================
-// Rutas protegidas
+// Rutas para MÉDICOS
+// ==========================
+
+// Obtener mi cola de turnos (solo médicos)
+router.get(
+  "/mi-cola",
+  verificarToken,
+  verificarRoles("medico"),
+  obtenerMiColaTurnos
+);
+
+// Llamar al siguiente paciente (solo médicos)
+router.post(
+  "/llamar-siguiente",
+  verificarToken,
+  verificarRoles("medico"),
+  llamarSiguientePaciente
+);
+
+// Iniciar atención de un turno (solo médicos)
+router.patch(
+  "/:id/iniciar-atencion",
+  verificarToken,
+  verificarRoles("medico"),
+  iniciarAtencion
+);
+
+// Finalizar atención de un turno (solo médicos)
+router.patch(
+  "/:id/finalizar-atencion",
+  verificarToken,
+  verificarRoles("medico"),
+  finalizarAtencion
+);
+
+// ==========================
+// Rutas para ENFERMEROS/ADMIN
 // ==========================
 
 // Crear turno (solo enfermero/admin)
 router.post(
   "/",
   verificarToken,
-  verificarRoles("enfermero", "admin"), // <- Solo estos roles
+  verificarRoles("enfermero", "admin"),
   crearTurno
 );
+
+// ==========================
+// Rutas generales (personal autorizado)
+// ==========================
 
 // Obtener cola de clínica
 router.get(
@@ -53,7 +98,7 @@ router.get(
   obtenerSiguienteTurno
 );
 
-// Cambiar estado de turno
+// Cambiar estado de turno (enfermeros y admin pueden cambiar cualquier estado)
 router.patch(
   "/:id/estado",
   verificarToken,
