@@ -1,0 +1,114 @@
+/* ==== ESTILO GENERAL ==== */
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(135deg, #e3f2fd, #ffffff);
+  font-family: "Poppins", sans-serif;
+}
+
+/* ==== CARD PRINCIPAL ==== */
+.auth-card {
+  display: flex;
+  width: 850px;
+  background: #fff;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+}
+
+/* ==== PANEL IZQUIERDO ==== */
+.auth-left {
+  flex: 1;
+  background: linear-gradient(135deg, #00c6ff, #0072ff);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+  text-align: center;
+}
+
+.auth-left h2 {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.auth-left p {
+  font-size: 1rem;
+  margin-bottom: 20px;
+  opacity: 0.9;
+}
+
+.auth-left button {
+  background: transparent;
+  border: 2px solid #fff;
+  color: white;
+  border-radius: 30px;
+  padding: 10px 30px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.auth-left button:hover {
+  background: white;
+  color: #0072ff;
+}
+
+/* ==== PANEL DERECHO ==== */
+.auth-right {
+  flex: 1;
+  padding: 50px;
+}
+
+.auth-right h3 {
+  color: #0072ff;
+  font-weight: 700;
+  margin-bottom: 30px;
+}
+
+/* ==== CAMPOS DE FORMULARIO ==== */
+.form-control {
+  border-radius: 30px;
+  padding: 10px 20px;
+}
+
+/* ==== BOTONES ==== */
+.btn-gradient {
+  background-color: #0072ff;
+  border: none;
+  color: #fff;
+  border-radius: 30px;
+  font-weight: 600;
+  padding: 10px 20px;
+  width: 100%;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+  cursor: pointer;
+}
+
+.btn-gradient:hover {
+  background-color: #005fd1; /* Un poco más oscuro */
+  transform: translateY(-3px); /* Se eleva ligeramente */
+  box-shadow: 0 6px 15px rgba(0, 114, 255, 0.4); /* Brillo suave */
+}
+
+/* ==== ICONOS SOCIALES ==== */
+.social-login {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.social-login i {
+  font-size: 1.3rem;
+  color: #0072ff;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.social-login i:hover {
+  color: #00c6ff;
+}

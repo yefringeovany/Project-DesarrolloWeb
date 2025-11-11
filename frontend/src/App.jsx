@@ -1,93 +1,94 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider, useAuth } from "./context/AuthContext";
+
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import { AuthProvider } from "./context/AuthContext";
 import Dashboard from "./pages/Dashboard";
-import ProtectedRoute from "./components/ProtectedRoute";
 import Pacientes from "./pages/Pacientes";
 import Clinicas from "./pages/Clinicas";
 import Turnos from "./pages/Turnos";
-import PantallaPublica from "./pages/PantallaPublica";
 import CrearTurno from "./pages/CrearTurno";
-import ColaMedico from "./pages/ColaMedico"; // 👈 asegúrate de que el archivo exista
+import ProtectedRoute from "./components/ProtectedRoute";
 
-function App() {
-  return (
-    <AuthProvider>
-      <Router>
-        <Routes>
-          {/* Página principal: Login */}
-          <Route path="/" element={<Login />} />
+// ✅ Evita acceso a login o register si ya hay usuario
+const PublicRoute = ({ children }) => {
+  const { usuario } = useAuth();
+  return usuario ? <Navigate to="/dashboard" replace /> : children;
+};
 
-          {/* Página de registro */}
-          <Route path="/register" element={<Register />} />
+const AppRoutes = () => (
+  <Routes>
+    {/* PÚBLICAS (solo sin sesión) */}
+    <Route
+      path="/login"
+      element={
+        <PublicRoute>
+          <Login />
+        </PublicRoute>
+      }
+    />
+    <Route
+      path="/register"
+      element={
+        <PublicRoute>
+          <Register />
+        </PublicRoute>
+      }
+    />
 
-          {/* Dashboard protegido */}
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
+    {/* PRIVADAS */}
+    <Route
+      path="/dashboard"
+      element={
+        <ProtectedRoute>
+          <Dashboard />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/pacientes"
+      element={
+        <ProtectedRoute>
+          <Pacientes />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/clinicas"
+      element={
+        <ProtectedRoute>
+          <Clinicas />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/turnos"
+      element={
+        <ProtectedRoute>
+          <Turnos />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/crear-turno"
+      element={
+        <ProtectedRoute>
+          <CrearTurno />
+        </ProtectedRoute>
+      }
+    />
 
-          {/* Pacientes */}
-          <Route
-            path="/pacientes"
-            element={
-              <ProtectedRoute>
-                <Pacientes />
-              </ProtectedRoute>
-            }
-          />
+    {/* Redirección por defecto */}
+    <Route path="*" element={<Navigate to="/login" replace />} />
+  </Routes>
+);
 
-          {/* Clínicas */}
-          <Route
-            path="/clinicas"
-            element={
-              <ProtectedRoute>
-                <Clinicas />
-              </ProtectedRoute>
-            }
-          />
-
-          {/* Turnos */}
-          <Route
-            path="/turnos"
-            element={
-              <ProtectedRoute>
-                <Turnos />
-              </ProtectedRoute>
-            }
-          />
-
-          {/* Crear Turno */}
-          <Route
-            path="/crear-turno"
-            element={
-              <ProtectedRoute>
-                <CrearTurno />
-              </ProtectedRoute>
-            }
-          />
-
-          {/* Mi Cola (médico) */}
-          <Route
-            path="/mi-cola"
-            element={
-              <ProtectedRoute>
-                <ColaMedico />
-              </ProtectedRoute>
-            }
-          />
-
-          {/* Pantalla pública */}
-          <Route path="/pantalla" element={<PantallaPublica />} />
-        </Routes>
-      </Router>
-    </AuthProvider>
-  );
-}
+const App = () => (
+  <AuthProvider>
+    <Router>
+      <AppRoutes />
+    </Router>
+  </AuthProvider>
+);
 
 export default App;

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import "../styles/AuthPage.css";
 
 const Register = () => {
   const [nombre, setNombre] = useState("");
@@ -12,23 +13,19 @@ const Register = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-  fetch("http://localhost:5000/api/clinicas")
-    .then((res) => res.json())
-    .then((data) => {
-      if (Array.isArray(data.clinicas)) {
-        setClinicas(data.clinicas);
-      } else {
-        setClinicas([]);
-      }
-    })
-    .catch(() => setClinicas([]));
-}, []);
+    fetch("http://localhost:5000/api/clinicas")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data.clinicas)) setClinicas(data.clinicas);
+      })
+      .catch(() => setClinicas([]));
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMensaje("");
 
- try {
+    try {
       const res = await fetch("http://localhost:5000/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -37,13 +34,11 @@ const Register = () => {
           email,
           password,
           rolId: parseInt(rolId),
-          // ✅ Solo los médicos (rolId = 3) deben tener clínica asignada
-          clinicaAsignadaId:
-            rolId === "3" ? parseInt(clinicaAsignadaId) : null,
+          clinicaAsignadaId: rolId === "3" ? parseInt(clinicaAsignadaId) : null,
         }),
       });
-      const data = await res.json();
 
+      const data = await res.json();
       if (!res.ok) {
         setMensaje(data.mensaje || "Error al registrar");
         return;
@@ -57,51 +52,41 @@ const Register = () => {
   };
 
   return (
-    <div className="d-flex align-items-center justify-content-center vh-100 bg-light">
-      <div className="card shadow-lg p-4" style={{ width: "26rem" }}>
-        <h3 className="text-center text-primary mb-4">Crear cuenta</h3>
-
-        <form onSubmit={handleSubmit}>
-          <div className="mb-3">
-            <label className="form-label fw-semibold">Nombre completo</label>
+    <div className="auth-container">
+      <div className="auth-card">
+        {/* PANEL DERECHO (FORMULARIO) */}
+        <div className="auth-right">
+          <h3>Registro</h3>
+          <form onSubmit={handleSubmit}>
             <input
               type="text"
-              className="form-control"
-              placeholder="Ej: Dr. Pérez"
+              className="form-control mb-3"
+              placeholder="Nombre completo"
               value={nombre}
               onChange={(e) => setNombre(e.target.value)}
               required
             />
-          </div>
 
-          <div className="mb-3">
-            <label className="form-label fw-semibold">Correo electrónico</label>
             <input
               type="email"
-              className="form-control"
-              placeholder="tuemail@ejemplo.com"
+              className="form-control mb-3"
+              placeholder="Correo electrónico"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
             />
-          </div>
 
-          <div className="mb-3">
-            <label className="form-label fw-semibold">Contraseña</label>
             <input
               type="password"
-              className="form-control"
-              placeholder="********"
+              className="form-control mb-3"
+              placeholder="Contraseña"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
-          </div>
 
-          <div className="mb-3">
-            <label className="form-label fw-semibold">Rol</label>
             <select
-              className="form-select"
+              className="form-select mb-3"
               value={rolId}
               onChange={(e) => setRolId(e.target.value)}
               required
@@ -109,15 +94,12 @@ const Register = () => {
               <option value="">Seleccionar rol...</option>
               <option value="1">Administrador</option>
               <option value="2">Enfermero</option>
-              <option value="3">Medico</option>
+              <option value="3">Médico</option>
             </select>
-          </div>
 
-          {rolId === "3" && (
-            <div className="mb-3">
-              <label className="form-label fw-semibold">Clínica asignada</label>
+            {rolId === "3" && (
               <select
-                className="form-select"
+                className="form-select mb-3"
                 value={clinicaAsignadaId}
                 onChange={(e) => setClinicaAsignadaId(e.target.value)}
                 required
@@ -129,30 +111,32 @@ const Register = () => {
                   </option>
                 ))}
               </select>
-            </div>
-          )}
+            )}
 
-          {mensaje && (
-            <div
-              className={`alert ${
-                mensaje.includes("✅") ? "alert-success" : "alert-danger"
-              } text-center`}
-            >
-              {mensaje}
-            </div>
-          )}
+            {mensaje && (
+              <div
+                className={`alert ${
+                  mensaje.includes("✅") ? "alert-success" : "alert-danger"
+                } text-center`}
+              >
+                {mensaje}
+              </div>
+            )}
 
-          <button type="submit" className="btn btn-success w-100">
-            Registrarme
-          </button>
-        </form>
+            <button type="submit" className="btn-gradient">
+           Registrarme
+            </button>        
+          </form>
+        </div>
 
-        <p className="text-center mt-3 text-muted">
-          ¿Ya tienes cuenta?{" "}
-          <Link to="/" className="text-primary fw-bold">
-            Inicia sesión aquí
+        {/* PANEL IZQUIERDO */}
+        <div className="auth-left">
+          <h2>¡Bienvenido de nuevo!</h2>
+          <p>¿Ya tienes cuenta?</p>
+          <Link to="/">
+            <button>Iniciar sesión</button>
           </Link>
-        </p>
+        </div>
       </div>
     </div>
   );

@@ -11,15 +11,16 @@ import {
 } from "lucide-react";
 
 const Dashboard = () => {
-  const { usuario, cerrarSesion } = useAuth();
+  const { usuario, logoutUser } = useAuth(); // ✅ usar logoutUser del contexto
   const navigate = useNavigate();
 
+  // 🔹 Cerrar sesión y redirigir
   const handleLogout = () => {
-    cerrarSesion();
-    navigate("/");
+    logoutUser();
+    navigate("/login"); // ✅ redirige al login después de cerrar sesión
   };
 
-  // Verificar rol para mostrar opciones específicas
+  // Verificar rol del usuario
   const esAdmin = usuario?.rol?.toLowerCase() === "admin";
   const esEnfermero = usuario?.rol?.toLowerCase() === "enfermero";
   const esMedico = usuario?.rol?.toLowerCase() === "medico";
@@ -36,9 +37,14 @@ const Dashboard = () => {
             <span className="text-white">
               👤 {usuario?.nombre} ({usuario?.rol})
             </span>
-            <button className="btn btn-outline-light btn-sm" onClick={handleLogout}>
-              <LogOut size={18} className="me-1" style={{ display: 'inline-block' }} />
-              Salir
+
+            {/* ✅ Botón de cerrar sesión */}
+            <button
+              className="btn btn-outline-light btn-sm d-flex align-items-center"
+              onClick={handleLogout}
+            >
+              <LogOut size={18} className="me-1" />
+              Cerrar Sesión
             </button>
           </div>
         </div>
@@ -51,13 +57,14 @@ const Dashboard = () => {
             Bienvenido, {usuario?.nombre}
           </h1>
           <p className="lead text-muted">
-            Panel de control - Rol: <span className="badge bg-primary">{usuario?.rol}</span>
+            Panel de control - Rol:{" "}
+            <span className="badge bg-primary">{usuario?.rol}</span>
           </p>
         </div>
 
         {/* Cards de acceso rápido */}
         <div className="row g-4">
-          {/* MÉDICO - Vista específica */}
+          {/* MÉDICO */}
           {esMedico && (
             <>
               <div className="col-md-6">
@@ -104,7 +111,7 @@ const Dashboard = () => {
             </>
           )}
 
-          {/* ENFERMERO - Vista específica */}
+          {/* ENFERMERO */}
           {esEnfermero && (
             <>
               <div className="col-md-4">
@@ -163,7 +170,7 @@ const Dashboard = () => {
             </>
           )}
 
-          {/* ADMIN - Acceso completo */}
+          {/* ADMIN */}
           {esAdmin && (
             <>
               <div className="col-md-3">
@@ -266,7 +273,9 @@ const Dashboard = () => {
                   {usuario?.clinicaAsignadaId && (
                     <div className="col-12">
                       <div className="border rounded p-3 bg-primary bg-opacity-10">
-                        <strong>🏥 Clínica Asignada:</strong> {usuario?.Clinica?.nombre_clinica || `ID: ${usuario?.clinicaAsignadaId}`}
+                        <strong>🏥 Clínica Asignada:</strong>{" "}
+                        {usuario?.Clinica?.nombre_clinica ||
+                          `ID: ${usuario?.clinicaAsignadaId}`}
                       </div>
                     </div>
                   )}

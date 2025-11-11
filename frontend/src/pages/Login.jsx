@@ -1,13 +1,19 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import "../styles/AuthPage.css";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  const { loginUser } = useAuth();
+  const { loginUser, usuario } = useAuth();
+
+  // 🔒 Si el usuario ya está autenticado, lo redirige directamente al Dashboard
+  if (usuario) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,8 +33,11 @@ const Login = () => {
         return;
       }
 
+      // ✅ Guarda usuario y token en contexto/localStorage
       loginUser(data);
-      navigate("/dashboard");
+
+      // ✅ Navega al dashboard y reemplaza el historial (no puede volver atrás)
+      navigate("/dashboard", { replace: true });
     } catch (err) {
       console.error("❌ Error en el login:", err);
       setError("Error de conexión con el servidor");
@@ -36,48 +45,52 @@ const Login = () => {
   };
 
   return (
-    <div className="d-flex align-items-center justify-content-center vh-100 bg-light">
-      <div className="card shadow-lg p-4" style={{ width: "24rem" }}>
-        <h3 className="text-center text-primary mb-4">Iniciar Sesión</h3>
-
-        <form onSubmit={handleSubmit}>
-          <div className="mb-3">
-            <label className="form-label fw-semibold">Correo electrónico</label>
-            <input
-              type="email"
-              className="form-control"
-              placeholder="tuemail@ejemplo.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
-
-          <div className="mb-3">
-            <label className="form-label fw-semibold">Contraseña</label>
-            <input
-              type="password"
-              className="form-control"
-              placeholder="********"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-
-          {error && <div className="alert alert-danger text-center">{error}</div>}
-
-          <button type="submit" className="btn btn-primary w-100">
-            Ingresar
-          </button>
-        </form>
-
-        <p className="text-center mt-3 text-muted">
-          ¿No tienes cuenta?{" "}
-          <Link to="/register" className="text-primary fw-bold">
-            Regístrate aquí
+    <div className="auth-container">
+      <div className="auth-card">
+        {/* PANEL IZQUIERDO */}
+        <div className="auth-left">
+          <h2>Hola, ¡Bienvenido!</h2>
+          <p>¿Aún no tienes una cuenta?</p>
+          <Link to="/register">
+            <button>Registrarse</button>
           </Link>
-        </p>
+        </div>
+
+        {/* PANEL DERECHO */}
+        <div className="auth-right">
+          <h3>Iniciar Sesión</h3>
+          <form onSubmit={handleSubmit}>
+            <div className="mb-3">
+              <input
+                type="email"
+                className="form-control"
+                placeholder="Correo electrónico"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="mb-3">
+              <input
+                type="password"
+                className="form-control"
+                placeholder="Contraseña"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+
+            {error && (
+              <div className="alert alert-danger text-center">{error}</div>
+            )}
+
+            <button type="submit" className="btn-gradient">
+              Ingresar
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );
