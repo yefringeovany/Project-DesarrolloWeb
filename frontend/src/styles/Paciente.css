@@ -1,0 +1,228 @@
+/* ===============================
+   DISEÑO GENERAL
+=================================*/
+.pacientes-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+  padding: 2rem;
+  color: #fff;
+  animation: fadeIn 0.6s ease-out;
+  font-family: "Poppins", sans-serif;
+}
+
+/* ===============================
+   HEADER
+=================================*/
+.pacientes-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.titulo {
+  font-size: 2.5rem;
+  font-weight: 700;
+  text-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+}
+
+.subtitulo {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* ===============================
+   CARD TRANSLÚCIDA
+=================================*/
+.glass-card {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 20px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  animation: fadeInUp 0.7s ease;
+}
+
+.glass-card h4 {
+  margin-bottom: 1.5rem;
+  color: #fff;
+  font-weight: 600;
+}
+
+/* ===============================
+   FORMULARIO
+=================================*/
+.paciente-form .form-row {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.paciente-form input,
+.paciente-form select {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+}
+
+.paciente-form input:focus,
+.paciente-form select:focus {
+  outline: none;
+  background: #fff;
+  box-shadow: 0 0 8px rgba(101, 137, 255, 0.7);
+}
+
+/* ===============================
+   BOTONES
+=================================*/
+.btn-modern {
+  border: none;
+  border-radius: 12px;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  color: white;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.btn-green {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+}
+
+.btn-gray {
+  background: rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+.btn-modern:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
+}
+
+/* ===============================
+   TABLA
+=================================*/
+.tabla-container {
+  overflow-x: auto;
+}
+
+.pacientes-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+  background-color: rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.pacientes-tabla th {
+  background-color: rgba(255, 255, 255, 0.25);
+  color: #fff;
+  padding: 0.75rem;
+}
+
+.pacientes-tabla td {
+  padding: 0.75rem;
+  color: #f5f5f5;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.pacientes-tabla tr:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* ===============================
+   BOTONES DE ACCIÓN
+=================================*/
+.btn-icon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  margin: 0 4px;
+  transition: transform 0.2s ease;
+}
+
+.btn-icon:hover {
+  transform: scale(1.2);
+}
+
+.btn-edit {
+  color: #00e5ff;
+}
+
+.btn-delete {
+  color: #ff5c5c;
+}
+
+/* ===============================
+   ALERTAS
+=================================*/
+.alert {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  border-radius: 10px;
+  text-align: center;
+  font-weight: 500;
+}
+
+.alert.success {
+  background: rgba(34, 197, 94, 0.3);
+  color: #b3ffcb;
+}
+
+.alert.error {
+  background: rgba(239, 68, 68, 0.3);
+  color: #ffd6d6;
+}
+
+/* ===============================
+   SIN ACCESO
+=================================*/
+.no-access-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  color: white;
+}
+
+/* ===============================
+   ANIMACIONES
+=================================*/
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(25px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+
+/* ===============================
+   BOTÓN DE REGRESAR
+=================================*/
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.btn-back {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  font-size: 0.9rem;
+  padding: 0.6rem 1.2rem;
+  border-radius: 10px;
+}
+
+.btn-back:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 15px rgba(255, 186, 73, 0.4);
+}

@@ -1,15 +1,29 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import { obtenerPacientes, crearPaciente, eliminarPaciente, actualizarPaciente } from "../api/pacientes";
+import { useNavigate } from "react-router-dom"; // 👈 Importar useNavigate
+import {
+  obtenerPacientes,
+  crearPaciente,
+  eliminarPaciente,
+  actualizarPaciente,
+} from "../api/pacientes";
 import { puedeGestionarPacientes } from "../utils/roles";
+import "../styles/Paciente.css";
 
 const Pacientes = () => {
   const { usuario } = useAuth();
+  const navigate = useNavigate(); // 👈 Hook para redirigir
   const [pacientes, setPacientes] = useState([]);
-  const [form, setForm] = useState({ nombre: "", edad: "", genero: "", dpi: "", direccion: "" });
+  const [form, setForm] = useState({
+    nombre: "",
+    edad: "",
+    genero: "",
+    dpi: "",
+    direccion: "",
+  });
   const [mensaje, setMensaje] = useState("");
   const [error, setError] = useState("");
-  const [editando, setEditando] = useState(null); // 🟢 NUEVO
+  const [editando, setEditando] = useState(null);
   const token = localStorage.getItem("token");
 
   const cargarPacientes = async () => {
@@ -31,10 +45,9 @@ const Pacientes = () => {
     setError("");
 
     if (editando) {
-      // 🟢 Si estamos editando, actualizamos el paciente
       const data = await actualizarPaciente(token, editando.id, form);
       if (data.paciente) {
-        setMensaje("Paciente actualizado exitosamente.");
+        setMensaje("✅ Paciente actualizado correctamente.");
         setEditando(null);
         setForm({ nombre: "", edad: "", genero: "", dpi: "", direccion: "" });
         cargarPacientes();
@@ -42,20 +55,18 @@ const Pacientes = () => {
         setError(data.mensaje || "Error al actualizar paciente.");
       }
     } else {
-      // Si no estamos editando, creamos uno nuevo
       const data = await crearPaciente(token, form);
       if (data.paciente) {
-        setMensaje("Paciente creado exitosamente.");
+        setMensaje("✅ Paciente registrado correctamente.");
         setForm({ nombre: "", edad: "", genero: "", dpi: "", direccion: "" });
         cargarPacientes();
       } else {
-        setError(data.mensaje || "Error al crear paciente.");
+        setError(data.mensaje || "Error al registrar paciente.");
       }
     }
   };
 
   const handleEditar = (paciente) => {
-    // 🟢 Llenamos el formulario con los datos del paciente seleccionado
     setEditando(paciente);
     setForm({
       nombre: paciente.nombre,
@@ -64,12 +75,9 @@ const Pacientes = () => {
       dpi: paciente.dpi,
       direccion: paciente.direccion,
     });
-    setMensaje("");
-    setError("");
   };
 
   const handleCancelar = () => {
-    // 🟢 Cancelar modo edición
     setEditando(null);
     setForm({ nombre: "", edad: "", genero: "", dpi: "", direccion: "" });
   };
@@ -83,87 +91,87 @@ const Pacientes = () => {
 
   if (!puedeGestionarPacientes(usuario.rol)) {
     return (
-      <div className="container mt-5">
-        <div className="alert alert-warning text-center">
-          No tienes permiso para acceder al módulo de Pacientes.
+      <div className="no-access-container">
+        <div className="glass-card text-center p-5">
+          <h3>🚫 Acceso Denegado</h3>
+          <p>No tienes permisos para gestionar pacientes.</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="container mt-5">
-      <h2 className="text-primary mb-4 text-center">Gestión de Pacientes</h2>
+    <div className="pacientes-page">
+      <header className="pacientes-header">
+        <div className="header-top">
+          <h1 className="titulo">👨‍⚕️ Gestión de Pacientes</h1>
+          {/* 👇 Botón para regresar */}
+          <button
+            className="btn-modern btn-back"
+            onClick={() => navigate("/dashboard")}
+          >
+            ← Regresar al Dashboard
+          </button>
+        </div>
+        
+      </header>
 
-      {/* Formulario */}
-      <div className="card shadow p-4 mb-4">
-        <h5 className="mb-3">{editando ? "Editar Paciente" : "Registrar Paciente"}</h5> {/* 🟢 */}
-        <form onSubmit={handleSubmit}>
-          <div className="row g-3">
-            <div className="col-md-4">
-              <input
-                type="text"
-                className="form-control"
-                placeholder="Nombre"
-                name="nombre"
-                value={form.nombre}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div className="col-md-2">
-              <input
-                type="number"
-                className="form-control"
-                placeholder="Edad"
-                name="edad"
-                value={form.edad}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div className="col-md-2">
-              <select
-                className="form-select"
-                name="genero"
-                value={form.genero}
-                onChange={handleChange}
-              >
-                <option value="">Género</option>
-                <option value="M">Masculino</option>
-                <option value="F">Femenino</option>
-              </select>
-            </div>
-            <div className="col-md-2">
-              <input
-                type="text"
-                className="form-control"
-                placeholder="DPI"
-                name="dpi"
-                value={form.dpi}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="col-md-2">
-              <input
-                type="text"
-                className="form-control"
-                placeholder="Dirección"
-                name="direccion"
-                value={form.direccion}
-                onChange={handleChange}
-              />
-            </div>
+      <section className="glass-card form-card">
+        <h4>{editando ? "✏️ Editar Paciente" : "🧍‍♂️ Registrar Paciente"}</h4>
+        <form onSubmit={handleSubmit} className="paciente-form">
+          <div className="form-row">
+            <input
+              type="text"
+              placeholder="Nombre completo"
+              name="nombre"
+              value={form.nombre}
+              onChange={handleChange}
+              required
+            />
+            <input
+              type="number"
+              placeholder="Edad"
+              name="edad"
+              value={form.edad}
+              onChange={handleChange}
+              required
+            />
+            <select
+              name="genero"
+              value={form.genero}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Género</option>
+              <option value="M">Masculino</option>
+              <option value="F">Femenino</option>
+            </select>
+          </div>
+          <div className="form-row">
+            <input
+              type="text"
+              placeholder="DPI"
+              name="dpi"
+              value={form.dpi}
+              onChange={handleChange}
+            />
+            <input
+              type="text"
+              placeholder="Dirección"
+              name="direccion"
+              value={form.direccion}
+              onChange={handleChange}
+            />
           </div>
 
-          <div className="d-flex gap-2 mt-3">
-            <button className="btn btn-success w-100">
-              {editando ? "Actualizar" : "Registrar"}
+          <div className="botones-form">
+            <button type="submit" className="btn-modern btn-green">
+              {editando ? "Actualizar Paciente" : "Registrar Paciente"}
             </button>
             {editando && (
               <button
                 type="button"
-                className="btn btn-secondary"
+                className="btn-modern btn-gray"
                 onClick={handleCancelar}
               >
                 Cancelar
@@ -172,63 +180,60 @@ const Pacientes = () => {
           </div>
         </form>
 
-        {mensaje && <div className="alert alert-success mt-3">{mensaje}</div>}
-        {error && <div className="alert alert-danger mt-3">{error}</div>}
-      </div>
+        {mensaje && <div className="alert success">{mensaje}</div>}
+        {error && <div className="alert error">{error}</div>}
+      </section>
 
-      {/* Tabla */}
-      <div className="card shadow p-4">
-        <h5>Lista de Pacientes</h5>
-        <table className="table table-striped mt-3">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Nombre</th>
-              <th>Edad</th>
-              <th>Género</th>
-              <th>DPI</th>
-              <th>Dirección</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {pacientes.length > 0 ? (
-              pacientes.map((p) => (
-                <tr key={p.id}>
-                  <td>{p.id}</td>
-                  <td>{p.nombre}</td>
-                  <td>{p.edad}</td>
-                  <td>{p.genero}</td>
-                  <td>{p.dpi}</td>
-                  <td>{p.direccion}</td>
-                  <td>
-                    <div className="btn-group">
+      <section className="glass-card tabla-card">
+        <h4>📋 Lista de Pacientes</h4>
+        <div className="tabla-container">
+          <table className="pacientes-tabla">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Edad</th>
+                <th>Género</th>
+                <th>DPI</th>
+                <th>Dirección</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {pacientes.length > 0 ? (
+                pacientes.map((p) => (
+                  <tr key={p.id}>
+                    <td>{p.id}</td>
+                    <td>{p.nombre}</td>
+                    <td>{p.edad}</td>
+                    <td>{p.genero}</td>
+                    <td>{p.dpi}</td>
+                    <td>{p.direccion}</td>
+                    <td className="acciones">
                       <button
-                        className="btn btn-warning btn-sm"
-                        onClick={() => handleEditar(p)} // 🟢
+                        className="btn-icon btn-edit"
+                        onClick={() => handleEditar(p)}
                       >
-                        Editar
+                        ✏️
                       </button>
                       <button
-                        className="btn btn-danger btn-sm"
+                        className="btn-icon btn-delete"
                         onClick={() => handleEliminar(p.id)}
                       >
-                        Eliminar
+                        🗑️
                       </button>
-                    </div>
-                  </td>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="7">No hay pacientes registrados.</td>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="7" className="text-center">
-                  No hay pacientes registrados.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </section>
     </div>
   );
 };

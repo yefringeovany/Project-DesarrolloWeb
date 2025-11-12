@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import {
   Clock,
   User,
@@ -8,21 +8,20 @@ import {
   Phone,
   Stethoscope,
   Archive,
+  ArrowLeft,
 } from "lucide-react";
+import "../styles/ColaMedico.css";
 
 const ColaMedico = () => {
   const { usuario, token } = useAuth();
+  const navigate = useNavigate();
   const [cola, setCola] = useState({ turnos: { enEspera: [], llamando: [], atendiendo: [] } });
   const [historial, setHistorial] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Redirigir si no es médico
   if (usuario?.rol !== "medico") return <Navigate to="/" replace />;
 
-  // ==============================
-  // Obtener cola del médico
-  // ==============================
   const obtenerCola = async () => {
     try {
       setLoading(true);
@@ -33,14 +32,12 @@ const ColaMedico = () => {
       if (!res.ok) throw new Error("Error al obtener la cola");
       const data = await res.json();
 
-      // Filtrar pacientes asignados a la misma clínica del médico
       const pacientesClinica = [
         ...data.turnos.enEspera,
         ...data.turnos.llamando,
         ...data.turnos.atendiendo,
       ].filter((t) => t.paciente.clinicaId === usuario.clinicaAsignadaId);
 
-      // Actualizar historial (evitar duplicados)
       setHistorial((prev) => {
         const nuevos = pacientesClinica.filter(
           (t) => !prev.find((p) => p.id === t.id)
@@ -60,13 +57,10 @@ const ColaMedico = () => {
 
   useEffect(() => {
     obtenerCola();
-    const interval = setInterval(obtenerCola, 15000); // refresca cada 15s
+    const interval = setInterval(obtenerCola, 15000);
     return () => clearInterval(interval);
   }, []);
 
-  // ==============================
-  // Función genérica para actualizar turno
-  // ==============================
   const actualizarTurno = async (url, body) => {
     try {
       const res = await fetch(url, {
@@ -77,7 +71,6 @@ const ColaMedico = () => {
         },
         body: JSON.stringify(body),
       });
-
       if (!res.ok) throw new Error("Error al actualizar el turno");
       await obtenerCola();
     } catch (err) {
@@ -102,102 +95,110 @@ const ColaMedico = () => {
       observaciones: "Consulta finalizada",
     });
 
-  // ==============================
-  // Renderización
-  // ==============================
   const { enEspera, llamando, atendiendo } = cola.turnos;
 
-  if (loading) return <div className="text-center mt-5">Cargando turnos...</div>;
-  if (error) return <div className="alert alert-danger text-center mt-3">{error}</div>;
+  if (loading)
+    return <div className="no-access-container">Cargando turnos...</div>;
+  if (error)
+    return <div className="alert error text-center mt-3">{error}</div>;
 
   return (
-    <div className="container mt-4">
-      <h2 className="text-primary mb-3 text-center">
-        <Stethoscope className="me-2" />
-        Cola de Turnos - {usuario.nombre}
-      </h2>
+    <div className="cola-medico-page">
+      <div className="header-top">
+        <button className="btn-back" onClick={() => navigate("/dashboard")}>
+          <ArrowLeft className="me-2" size={18} />
+          Regresar al Dashboard
+        </button>
+      </div>
 
-      {/* ---------------- EN ESPERA ---------------- */}
-      <SeccionTurnos
-        titulo="En Espera"
-        color="secondary"
-        turnos={enEspera}
-        boton={(turno) => (
-          <button
-            onClick={() => llamarSiguiente(turno.id)}
-            className="btn btn-sm btn-warning mt-2"
-          >
-            <Phone className="me-1" /> Llamar
-          </button>
-        )}
-      />
+      <div className="cola-medico-header">
+        <h2 className="titulo">
+          <Stethoscope className="me-2" /> Cola de Turnos
+        </h2>
+        <p className="subtitulo">Dr. {usuario?.nombre}</p>
+      </div>
 
-      {/* ---------------- LLAMANDO ---------------- */}
-      <SeccionTurnos
-        titulo="Llamando"
-        color="info"
-        turnos={llamando}
-        boton={(turno) => (
-          <button
-            onClick={() => iniciarAtencion(turno.id)}
-            className="btn btn-sm btn-success mt-2"
-          >
-            <Stethoscope className="me-1" /> Iniciar Atención
-          </button>
-        )}
-      />
+      {/* En espera */}
+      <div className="glass-card">
+        <SeccionTurnos
+          titulo="En Espera"
+          color="gray"
+          turnos={enEspera}
+          boton={(turno) => (
+            <button
+              onClick={() => llamarSiguiente(turno.id)}
+              className="btn-modern btn-yellow mt-2"
+            >
+              <Phone className="me-1" /> Llamar
+            </button>
+          )}
+        />
+      </div>
 
-      {/* ---------------- ATENDIENDO ---------------- */}
-      <SeccionTurnos
-        titulo="Atendiendo"
-        color="success"
-        turnos={atendiendo}
-        boton={(turno) => (
-          <button
-            onClick={() => finalizarAtencion(turno.id)}
-            className="btn btn-sm btn-danger mt-2"
-          >
-            Finalizar Atención
-          </button>
-        )}
-      />
+      {/* Llamando */}
+      <div className="glass-card">
+        <SeccionTurnos
+          titulo="Llamando"
+          color="blue"
+          turnos={llamando}
+          boton={(turno) => (
+            <button
+              onClick={() => iniciarAtencion(turno.id)}
+              className="btn-modern btn-green mt-2"
+            >
+              <Stethoscope className="me-1" /> Iniciar Atención
+            </button>
+          )}
+        />
+      </div>
 
-      {/* ---------------- HISTORIAL ---------------- */}
-      <section className="mt-5">
-        <h4 className="text-muted mb-2">
+      {/* Atendiendo */}
+      <div className="glass-card">
+        <SeccionTurnos
+          titulo="Atendiendo"
+          color="green"
+          turnos={atendiendo}
+          boton={(turno) => (
+            <button
+              onClick={() => finalizarAtencion(turno.id)}
+              className="btn-modern btn-red mt-2"
+            >
+              <CheckCircle className="me-1" /> Finalizar Atención
+            </button>
+          )}
+        />
+      </div>
+
+      {/* Historial */}
+      <div className="glass-card mt-4">
+        <h4 className="mb-3">
           <Archive className="me-2" /> Historial de Pacientes
         </h4>
         {historial.length === 0 ? (
-          <p>No hay historial de pacientes aún.</p>
+          <p className="text-light">No hay historial aún.</p>
         ) : (
           historial.map((turno) => (
-            <div key={turno.id} className="card p-2 mb-2 shadow-sm">
-              <strong>{turno.paciente.nombre}</strong> - Estado:{" "}
-              <span className={`badge bg-${
-                turno.estado === "enEspera" ? "secondary" :
-                turno.estado === "llamando" ? "info" : "success"
-              }`}>
-                {turno.estado}
-              </span>
+            <div key={turno.id} className="historial-item">
+              <User className="me-2" /> <strong>{turno.paciente.nombre}</strong> —{" "}
+              <span className="estado">{turno.estado}</span>
             </div>
           ))
         )}
-      </section>
+      </div>
     </div>
   );
 };
 
-// Componente reutilizable para secciones
 const SeccionTurnos = ({ titulo, color, turnos, boton }) => (
-  <section className="mb-4">
-    <h4 className={`text-${color} mb-2`}>{titulo} ({turnos.length})</h4>
+  <section className="seccion-turnos">
+    <h4 className="seccion-titulo">{titulo} ({turnos.length})</h4>
     {turnos.length === 0 ? (
-      <p className="text-muted">No hay pacientes en esta etapa.</p>
+      <p className="text-light">No hay pacientes en esta etapa.</p>
     ) : (
       turnos.map((turno) => (
-        <div key={turno.id} className={`card p-3 mb-2 shadow-sm border-${color}`}>
+        <div key={turno.id} className="turno-card">
           <strong>{turno.paciente.nombre}</strong> - {turno.motivo}
-          <div className="text-muted">Prioridad: {turno.prioridad}</div>
+          <div className="text-light">Prioridad: {turno.prioridad}</div>
           {boton(turno)}
         </div>
       ))

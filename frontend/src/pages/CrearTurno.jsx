@@ -8,10 +8,14 @@ import {
   Building2,
   Users,
   FileText,
+  ArrowLeft,
 } from "lucide-react";
+import "../styles/CrearTurno.css";
+import { useNavigate } from "react-router-dom";
 
 const CrearTurno = () => {
   const { usuario } = useAuth();
+  const navigate = useNavigate();
 
   // ================================
   // Estado y lógica del formulario
@@ -111,34 +115,31 @@ const CrearTurno = () => {
     }
   };
 
-  // ================================
   // 🚫 Validación de permisos
-  // ================================
   if (!puedeCrearTurnos(usuario?.rol)) {
     return (
-      <div className="vh-100 d-flex justify-content-center align-items-center bg-light">
+      <div className="no-access-container">
         <div className="text-center">
-          <div className="alert alert-danger shadow-lg">
-            <h4 className="fw-bold mb-2">🚫 Acceso Denegado</h4>
-            <p>No tienes permisos para crear turnos.</p>
-            <a href="/dashboard" className="btn btn-primary mt-3">
-              Volver al Panel Principal
-            </a>
-          </div>
+          <h4>🚫 Acceso Denegado</h4>
+          <p>No tienes permisos para crear turnos.</p>
+          <button
+            className="btn-modern btn-back mt-3"
+            onClick={() => navigate("/dashboard")}
+          >
+            <ArrowLeft className="me-1" /> Regresar al Dashboard
+          </button>
         </div>
       </div>
     );
   }
 
-  // ================================
   // Pantalla de carga
-  // ================================
   if (loadingData) {
     return (
-      <div className="vh-100 d-flex justify-content-center align-items-center bg-light">
+      <div className="no-access-container">
         <div className="text-center">
-          <div className="spinner-border text-primary mb-3" role="status"></div>
-          <p className="text-muted">Cargando datos...</p>
+          <div className="spinner-border text-light mb-3" role="status"></div>
+          <p>Cargando datos...</p>
         </div>
       </div>
     );
@@ -148,186 +149,113 @@ const CrearTurno = () => {
   // Vista principal del formulario
   // ================================
   return (
-    <div className="container py-5">
-      <div className="card shadow-lg border-0">
-        <div className="card-header bg-primary text-white d-flex align-items-center">
-          <Clock className="me-2" /> <h4 className="mb-0">Crear Nuevo Turno</h4>
-        </div>
-
-        <div className="card-body">
-          {/* Mensaje de alerta */}
-          {mensaje.texto && (
-            <div
-              className={`alert d-flex align-items-center ${
-                mensaje.tipo === "success" ? "alert-success" : "alert-danger"
-              }`}
-              role="alert"
-            >
-              {mensaje.tipo === "success" ? (
-                <CheckCircle className="me-2" />
-              ) : (
-                <AlertCircle className="me-2" />
-              )}
-              <div>{mensaje.texto}</div>
-            </div>
-          )}
-
-          {/* Turno creado */}
-          {turnoCreado && (
-            <div className="alert alert-success border-success">
-              <h5 className="fw-bold mb-2">
-                <CheckCircle className="me-2" /> ¡Turno Creado Exitosamente!
-              </h5>
-              <ul className="mb-0">
-                <li>
-                  <strong>Número de Turno:</strong> {turnoCreado.numeroTurno}
-                </li>
-                <li>
-                  <strong>Paciente:</strong> {turnoCreado.paciente?.nombre}
-                </li>
-                <li>
-                  <strong>Clínica:</strong> {turnoCreado.clinica?.nombre_clinica}
-                </li>
-                <li>
-                  <strong>Estado:</strong>{" "}
-                  <span className="badge bg-warning text-dark">En espera</span>
-                </li>
-              </ul>
-            </div>
-          )}
-
-          {/* Formulario */}
-          <form onSubmit={handleSubmit}>
-            <div className="mb-3">
-              <label className="form-label fw-semibold">
-                <Users className="me-1" /> Seleccionar Paciente *
-              </label>
-              <select
-                className="form-select"
-                value={formData.pacienteId}
-                onChange={(e) => handleChange("pacienteId", e.target.value)}
-              >
-                <option value="">-- Seleccione un paciente --</option>
-                {pacientes.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.nombre} — DPI: {p.dpi}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="mb-3">
-              <label className="form-label fw-semibold">
-                <Building2 className="me-1" /> Seleccionar Clínica *
-              </label>
-              <select
-                className="form-select"
-                value={formData.clinicaId}
-                onChange={(e) => handleChange("clinicaId", e.target.value)}
-              >
-                <option value="">-- Seleccione una clínica --</option>
-                {clinicas.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.nombre_clinica}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="mb-3">
-              <label className="form-label fw-semibold">
-                <AlertCircle className="me-1" /> Nivel de Prioridad
-              </label>
-              <div className="d-flex gap-2 flex-wrap">
-                {["normal", "urgente", "emergencia"].map((p) => (
-                  <button
-                    key={p}
-                    type="button"
-                    className={`btn ${
-                      formData.prioridad === p
-                        ? p === "normal"
-                          ? "btn-outline-secondary"
-                          : p === "urgente"
-                          ? "btn-outline-warning"
-                          : "btn-outline-danger"
-                        : "btn-light border"
-                    }`}
-                    onClick={() => handleChange("prioridad", p)}
-                  >
-                    {p === "emergencia" && "🚨 "}
-                    {p === "urgente" && "⚠️ "}
-                    {p === "normal" && "✓ "}
-                    {p.charAt(0).toUpperCase() + p.slice(1)}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="mb-3">
-              <label className="form-label fw-semibold">
-                <FileText className="me-1" /> Motivo de Consulta (opcional)
-              </label>
-              <textarea
-                className="form-control"
-                rows="3"
-                maxLength="500"
-                placeholder="Descripción breve..."
-                value={formData.motivo}
-                onChange={(e) => handleChange("motivo", e.target.value)}
-              />
-              <small className="text-muted">
-                {formData.motivo.length}/500 caracteres
-              </small>
-            </div>
-
-            <div className="d-flex justify-content-end gap-2">
-              <button
-                type="button"
-                className="btn btn-outline-secondary"
-                onClick={() =>
-                  setFormData({
-                    pacienteId: "",
-                    clinicaId: "",
-                    motivo: "",
-                    prioridad: "normal",
-                  })
-                }
-              >
-                Limpiar
-              </button>
-              <button
-                type="submit"
-                className="btn btn-primary"
-                disabled={loading}
-              >
-                {loading ? (
-                  <>
-                    <span className="spinner-border spinner-border-sm me-2"></span>
-                    Creando...
-                  </>
-                ) : (
-                  <>
-                    <CheckCircle className="me-1" /> Crear Turno
-                  </>
-                )}
-              </button>
-            </div>
-          </form>
+    <div className="crear-turno-page">
+      <div className="header-top">
+        <button className="btn-modern btn-back" onClick={() => navigate("/dashboard")}>
+          <ArrowLeft className="me-1" /> Regresar
+        </button>
+        <div className="crear-turno-header">
+          <h2 className="titulo">Crear Nuevo Turno</h2>
+          <p className="subtitulo">Gestione los turnos de pacientes fácilmente</p>
         </div>
       </div>
 
-      {/* Info */}
-      <div className="alert alert-info mt-4">
-        <h6 className="fw-bold mb-2">
-          <AlertCircle className="me-2" />
-          Información importante
-        </h6>
-        <ul className="mb-0 ps-3">
-          <li>El turno se asignará automáticamente a la cola de espera.</li>
-          <li>El número de turno se genera automáticamente.</li>
-          <li>El turno aparecerá en tiempo real en la pantalla pública.</li>
-          <li>Los turnos de emergencia tienen prioridad máxima.</li>
-        </ul>
+      <div className="glass-card">
+        {/* Mensaje de alerta */}
+        {mensaje.texto && (
+          <div className={`alert ${mensaje.tipo}`}>
+            {mensaje.tipo === "success" ? (
+              <CheckCircle className="me-2" />
+            ) : (
+              <AlertCircle className="me-2" />
+            )}
+            {mensaje.texto}
+          </div>
+        )}
+
+        {/* Turno creado */}
+        {turnoCreado && (
+          <div className="alert success">
+            <h5 className="fw-bold mb-2">
+              <CheckCircle className="me-2" /> ¡Turno Creado Exitosamente!
+            </h5>
+            <ul>
+              <li><strong>Número:</strong> {turnoCreado.numeroTurno}</li>
+              <li><strong>Paciente:</strong> {turnoCreado.paciente?.nombre}</li>
+              <li><strong>Clínica:</strong> {turnoCreado.clinica?.nombre_clinica}</li>
+              <li><strong>Estado:</strong> En espera</li>
+            </ul>
+          </div>
+        )}
+
+        {/* Formulario */}
+        <form className="crear-turno-form" onSubmit={handleSubmit}>
+          <div className="form-row">
+            <select
+              value={formData.pacienteId}
+              onChange={(e) => handleChange("pacienteId", e.target.value)}
+            >
+              <option value="">-- Seleccione un paciente --</option>
+              {pacientes.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.nombre} — DPI: {p.dpi}
+                </option>
+              ))}
+            </select>
+
+            <select
+              value={formData.clinicaId}
+              onChange={(e) => handleChange("clinicaId", e.target.value)}
+            >
+              <option value="">-- Seleccione una clínica --</option>
+              {clinicas.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.nombre_clinica}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="form-row">
+            <textarea
+              rows="3"
+              placeholder="Motivo de consulta (opcional)"
+              value={formData.motivo}
+              onChange={(e) => handleChange("motivo", e.target.value)}
+            />
+          </div>
+
+          <div className="form-row">
+            {["normal", "urgente", "emergencia"].map((p) => (
+              <button
+                key={p}
+                type="button"
+                className={`btn-modern ${
+                  formData.prioridad === p
+                    ? p === "emergencia"
+                      ? "btn-red"
+                      : p === "urgente"
+                      ? "btn-yellow"
+                      : "btn-green"
+                    : "btn-gray"
+                }`}
+                onClick={() => handleChange("prioridad", p)}
+              >
+                {p.charAt(0).toUpperCase() + p.slice(1)}
+              </button>
+            ))}
+          </div>
+
+          <div className="form-row justify-end">
+            <button
+              type="submit"
+              className="btn-modern btn-green"
+              disabled={loading}
+            >
+              {loading ? "Creando..." : "Crear Turno"}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );

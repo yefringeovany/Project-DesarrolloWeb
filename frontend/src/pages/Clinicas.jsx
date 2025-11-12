@@ -1,13 +1,17 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 import { puedeGestionarClinicas } from "../utils/roles";
+import "../styles/Clinica.css"; // 👈 Importar los estilos modernos
 
 const Clinicas = () => {
   const { usuario } = useAuth();
+  const navigate = useNavigate();
   const [clinicas, setClinicas] = useState([]);
   const [form, setForm] = useState({ nombre_clinica: "", direccion: "", telefono: "" });
   const [editando, setEditando] = useState(null);
   const [error, setError] = useState("");
+  const [mensaje, setMensaje] = useState("");
   const token = localStorage.getItem("token");
 
   const fetchClinicas = async () => {
@@ -34,6 +38,7 @@ const Clinicas = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setMensaje("");
 
     const url = editando
       ? `http://localhost:5000/api/clinicas/${editando}`
@@ -58,6 +63,7 @@ const Clinicas = () => {
 
       setForm({ nombre_clinica: "", direccion: "", telefono: "" });
       setEditando(null);
+      setMensaje(editando ? "✅ Clínica actualizada correctamente." : "✅ Clínica registrada correctamente.");
       fetchClinicas();
     } catch (err) {
       console.error("Error al guardar clínica:", err);
@@ -86,145 +92,131 @@ const Clinicas = () => {
         alert(data.mensaje || "Error al eliminar la clínica");
         return;
       }
+      setMensaje("🗑️ Clínica eliminada correctamente.");
       fetchClinicas();
     } catch (err) {
       console.error("Error al eliminar clínica:", err);
     }
   };
 
-  return (
-    <div className="container my-5">
-      <h2 className="text-center text-primary mb-4">🏥 Gestión de Clínicas</h2>
-
-      {error && <div className="alert alert-danger text-center">{error}</div>}
-
-      {/* Formulario solo visible para admin y enfermero */}
-      {puedeGestionarClinicas(usuario.rol) && (
-        <div className="card shadow p-4 mb-4">
-          <h5 className="text-secondary mb-3">
-            {editando ? "Editar Clínica" : "Registrar Nueva Clínica"}
-          </h5>
-
-          <form onSubmit={handleSubmit}>
-            <div className="row g-3">
-              <div className="col-md-4">
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Nombre de la clínica"
-                  name="nombre_clinica"
-                  value={form.nombre_clinica}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div className="col-md-5">
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Dirección"
-                  name="direccion"
-                  value={form.direccion}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div className="col-md-3">
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Teléfono"
-                  name="telefono"
-                  value={form.telefono}
-                  onChange={handleChange}
-                />
-              </div>
-            </div>
-
-            <div className="mt-3 text-end">
-              <button type="submit" className="btn btn-primary px-4">
-                {editando ? "Actualizar" : "Registrar"}
-              </button>
-              {editando && (
-                <button
-                  type="button"
-                  className="btn btn-secondary ms-2 px-4"
-                  onClick={() => {
-                    setForm({ nombre_clinica: "", direccion: "", telefono: "" });
-                    setEditando(null);
-                  }}
-                >
-                  Cancelar
-                </button>
-              )}
-            </div>
-          </form>
+  if (!puedeGestionarClinicas(usuario.rol)) {
+    return (
+      <div className="no-access-container">
+        <div className="glass-card text-center p-5">
+          <h3>🚫 Acceso Denegado</h3>
+          <p>No tienes permisos para gestionar clínicas.</p>
         </div>
-      )}
+      </div>
+    );
+  }
 
-      {/* Listado de clínicas */}
-      <div className="card shadow p-4">
-        <h5 className="text-secondary mb-3">Lista de Clínicas</h5>
+  return (
+    <div className="clinicas-page">
+      {/* HEADER */}
+      <header className="clinicas-header">
+        <div className="header-top">
+          <h1 className="titulo">🏥 Gestión de Clínicas</h1>
+          <button className="btn-modern btn-back" onClick={() => navigate("/dashboard")}>
+            ← Regresar al Dashboard
+          </button>
+        </div>
+        <p className="subtitulo">Administra y controla la información de tus clínicas registradas.</p>
+      </header>
 
-        {clinicas.length === 0 ? (
-          <p className="text-center text-muted">No hay clínicas registradas.</p>
-        ) : (
-          <div className="table-responsive">
-            <table className="table table-striped align-middle">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Nombre</th>
-                  <th>Dirección</th>
-                  <th>Teléfono</th>
-                  {puedeGestionarClinicas(usuario.rol) && <th>Acciones</th>}
-                </tr>
-              </thead>
-              <tbody>
-                {clinicas.map((c, i) => (
+      {/* FORMULARIO */}
+      <section className="glass-card form-card">
+        <h4>{editando ? "✏️ Editar Clínica" : "➕ Registrar Nueva Clínica"}</h4>
+        <form onSubmit={handleSubmit} className="clinica-form">
+          <div className="form-row">
+            <input
+              type="text"
+              placeholder="Nombre de la clínica"
+              name="nombre_clinica"
+              value={form.nombre_clinica}
+              onChange={handleChange}
+              required
+            />
+            <input
+              type="text"
+              placeholder="Dirección"
+              name="direccion"
+              value={form.direccion}
+              onChange={handleChange}
+              required
+            />
+            <input
+              type="text"
+              placeholder="Teléfono"
+              name="telefono"
+              value={form.telefono}
+              onChange={handleChange}
+            />
+          </div>
+
+          <div className="botones-form">
+            <button type="submit" className="btn-modern btn-green">
+              {editando ? "Actualizar Clínica" : "Registrar Clínica"}
+            </button>
+            {editando && (
+              <button
+                type="button"
+                className="btn-modern btn-gray"
+                onClick={() => {
+                  setEditando(null);
+                  setForm({ nombre_clinica: "", direccion: "", telefono: "" });
+                }}
+              >
+                Cancelar
+              </button>
+            )}
+          </div>
+        </form>
+
+        {mensaje && <div className="alert success">{mensaje}</div>}
+        {error && <div className="alert error">{error}</div>}
+      </section>
+
+      {/* TABLA DE CLÍNICAS */}
+      <section className="glass-card tabla-card">
+        <h4>📋 Lista de Clínicas</h4>
+        <div className="tabla-container">
+          <table className="clinicas-tabla">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Nombre</th>
+                <th>Dirección</th>
+                <th>Teléfono</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {clinicas.length > 0 ? (
+                clinicas.map((c, i) => (
                   <tr key={c.id}>
                     <td>{i + 1}</td>
                     <td>{c.nombre_clinica}</td>
                     <td>{c.direccion}</td>
                     <td>{c.telefono || "-"}</td>
-                    {puedeGestionarClinicas(usuario.rol) && (
-                      <td>
-                        <div className="d-flex flex-wrap gap-2">
-                          {/* Botón Editar (admin + enfermero) */}
-                          <button
-                            onClick={() => handleEditar(c)}
-                            className="btn btn-info btn-sm d-flex align-items-center px-3 rounded-pill shadow-sm"
-                            style={{ transition: "all 0.2s ease", fontWeight: "500" }}
-                            onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
-                            onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
-                          >
-                            <i className="bi bi-pencil-square me-2"></i>
-                            <span className="d-none d-md-inline">Editar</span>
-                          </button>
-
-                          {/* Botón Eliminar (solo admin) */}
-                          {usuario.rol === "admin" && (
-                            <button
-                              onClick={() => handleEliminar(c.id)}
-                              className="btn btn-danger btn-sm d-flex align-items-center px-3 rounded-pill shadow-sm"
-                              style={{ transition: "all 0.2s ease", fontWeight: "500" }}
-                              onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
-                              onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
-                            >
-                              <i className="bi bi-trash3 me-2"></i>
-                              <span className="d-none d-md-inline">Eliminar</span>
-                            </button>
-                          )}
-                        </div>
-                      </td>
-                    )}
+                    <td className="acciones">
+                      <button className="btn-icon btn-edit" onClick={() => handleEditar(c)}>
+                        ✏️
+                      </button>
+                      <button className="btn-icon btn-delete" onClick={() => handleEliminar(c.id)}>
+                        🗑️
+                      </button>
+                    </td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="5">No hay clínicas registradas.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </section>
     </div>
   );
 };

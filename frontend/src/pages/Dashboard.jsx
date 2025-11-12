@@ -228,9 +228,15 @@ const Dashboard = () => {
               } card-animate-${index + 1}`}
             >
               <div
-                className="card access-card"
-                onClick={() => navigate(card.route)}
-              >
+  className="card access-card"
+  onClick={() => {
+    if (card.title === "Pantalla Pública") {
+      window.open(card.route, "_blank"); // 👈 Abre en nueva pestaña
+    } else {
+      navigate(card.route);
+    }
+  }}
+>
                 {/* Decoración de gradiente */}
                 <div className={`card-gradient-decoration ${card.gradient}`} />
 
