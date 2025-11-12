@@ -6,8 +6,10 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Pacientes from "./pages/Pacientes";
 import Clinicas from "./pages/Clinicas";
-import Turnos from "./pages/Turnos";
+//import Turnos from "./pages/Turnos";
 import CrearTurno from "./pages/CrearTurno";
+import ColaMedico from "./pages/ColaMedico";
+import PantallaPublica from "./pages/PantallaPublica";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 // ✅ Evita acceso a login o register si ya hay usuario
@@ -61,14 +63,7 @@ const AppRoutes = () => (
         </ProtectedRoute>
       }
     />
-    <Route
-      path="/turnos"
-      element={
-        <ProtectedRoute>
-          <Turnos />
-        </ProtectedRoute>
-      }
-    />
+    
     <Route
       path="/crear-turno"
       element={
@@ -77,9 +72,28 @@ const AppRoutes = () => (
         </ProtectedRoute>
       }
     />
+    
+    {/* 🆕 RUTAS NUEVAS */}
+    <Route
+      path="/mi-cola"
+      element={
+        <ProtectedRoute>
+          <ColaMedico />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/pantalla"
+      element={
+        <ProtectedRoute>
+          <PantallaPublica />
+        </ProtectedRoute>
+      }
+    />
 
     {/* Redirección por defecto */}
-    <Route path="*" element={<Navigate to="/login" replace />} />
+    <Route path="/" element={<Navigate to="/dashboard" replace />} />
+    <Route path="*" element={<Navigate to="/dashboard" replace />} />
   </Routes>
 );
 

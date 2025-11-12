@@ -1,33 +1,53 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { Navigate } from "react-router-dom";
-import { Clock, User, CheckCircle, Phone, Stethoscope } from "lucide-react";
+import {
+  Clock,
+  User,
+  CheckCircle,
+  Phone,
+  Stethoscope,
+  Archive,
+} from "lucide-react";
 
 const ColaMedico = () => {
   const { usuario, token } = useAuth();
-  const [cola, setCola] = useState(null);
+  const [cola, setCola] = useState({ turnos: { enEspera: [], llamando: [], atendiendo: [] } });
+  const [historial, setHistorial] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Si el usuario no es médico, redirige
-  if (usuario?.rol !== "medico") {
-    return <Navigate to="/" replace />;
-  }
+  // Redirigir si no es médico
+  if (usuario?.rol !== "medico") return <Navigate to="/" replace />;
 
   // ==============================
-  // Cargar la cola del médico
+  // Obtener cola del médico
   // ==============================
   const obtenerCola = async () => {
     try {
       setLoading(true);
       const res = await fetch("http://localhost:5000/api/turnos/mi-cola", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (!res.ok) throw new Error("Error al obtener la cola");
       const data = await res.json();
+
+      // Filtrar pacientes asignados a la misma clínica del médico
+      const pacientesClinica = [
+        ...data.turnos.enEspera,
+        ...data.turnos.llamando,
+        ...data.turnos.atendiendo,
+      ].filter((t) => t.paciente.clinicaId === usuario.clinicaAsignadaId);
+
+      // Actualizar historial (evitar duplicados)
+      setHistorial((prev) => {
+        const nuevos = pacientesClinica.filter(
+          (t) => !prev.find((p) => p.id === t.id)
+        );
+        return [...nuevos, ...prev];
+      });
+
       setCola(data);
       setError("");
     } catch (err) {
@@ -40,157 +60,125 @@ const ColaMedico = () => {
 
   useEffect(() => {
     obtenerCola();
+    const interval = setInterval(obtenerCola, 15000); // refresca cada 15s
+    return () => clearInterval(interval);
   }, []);
 
   // ==============================
-  // Llamar siguiente paciente
+  // Función genérica para actualizar turno
   // ==============================
-  const llamarSiguiente = async (turnoId) => {
+  const actualizarTurno = async (url, body) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/turnos/${turnoId}/estado`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          nuevoEstado: "llamando",
-          observaciones: "Paciente, por favor pase a la clínica",
-        }),
-      });
-
-      if (!res.ok) throw new Error("Error al cambiar estado a 'llamando'");
-      await obtenerCola();
-    } catch (err) {
-      console.error("Error al llamar paciente:", err);
-      setError("No se pudo llamar al paciente.");
-    }
-  };
-
-  // ==============================
-  // Iniciar atención
-  // ==============================
-  const iniciarAtencion = async (turnoId) => {
-    try {
-      const res = await fetch(`http://localhost:5000/api/turnos/${turnoId}/iniciar-atencion`, {
+      const res = await fetch(url, {
         method: "PATCH",
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          observaciones: "Iniciando consulta",
-        }),
+        body: JSON.stringify(body),
       });
 
-      if (!res.ok) throw new Error("Error al iniciar atención");
+      if (!res.ok) throw new Error("Error al actualizar el turno");
       await obtenerCola();
     } catch (err) {
-      console.error("Error al iniciar atención:", err);
-      setError("No se pudo iniciar la atención del paciente.");
+      console.error(err);
+      setError("Ocurrió un error al actualizar el turno.");
     }
   };
 
-  // ==============================
-  // Finalizar atención
-  // ==============================
-  const finalizarAtencion = async (turnoId) => {
-    try {
-      const res = await fetch(`http://localhost:5000/api/turnos/${turnoId}/finalizar-atencion`, {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          observaciones: "Consulta finalizada",
-        }),
-      });
+  const llamarSiguiente = (id) =>
+    actualizarTurno(`http://localhost:5000/api/turnos/${id}/estado`, {
+      nuevoEstado: "llamando",
+      observaciones: "Paciente, por favor pase a la clínica",
+    });
 
-      if (!res.ok) throw new Error("Error al finalizar atención");
-      await obtenerCola();
-    } catch (err) {
-      console.error("Error al finalizar atención:", err);
-      setError("No se pudo finalizar la atención.");
-    }
-  };
+  const iniciarAtencion = (id) =>
+    actualizarTurno(`http://localhost:5000/api/turnos/${id}/iniciar-atencion`, {
+      observaciones: "Iniciando consulta",
+    });
+
+  const finalizarAtencion = (id) =>
+    actualizarTurno(`http://localhost:5000/api/turnos/${id}/finalizar-atencion`, {
+      observaciones: "Consulta finalizada",
+    });
+
+  // ==============================
+  // Renderización
+  // ==============================
+  const { enEspera, llamando, atendiendo } = cola.turnos;
 
   if (loading) return <div className="text-center mt-5">Cargando turnos...</div>;
   if (error) return <div className="alert alert-danger text-center mt-3">{error}</div>;
 
-  const enEspera = cola?.turnos?.enEspera || [];
-  const llamando = cola?.turnos?.llamando || [];
-  const atendiendo = cola?.turnos?.atendiendo || [];
-
   return (
     <div className="container mt-4">
       <h2 className="text-primary mb-3 text-center">
-        <Stethoscope className="inline-block mr-2" />
+        <Stethoscope className="me-2" />
         Cola de Turnos - {usuario.nombre}
       </h2>
 
       {/* ---------------- EN ESPERA ---------------- */}
-      <section className="mb-4">
-        <h4 className="text-secondary mb-2">
-          <Clock className="inline-block mr-2" /> En Espera ({enEspera.length})
-        </h4>
-        {enEspera.length === 0 ? (
-          <p>No hay pacientes en espera.</p>
-        ) : (
-          enEspera.map((turno) => (
-            <div key={turno.id} className="card p-3 mb-2 shadow-sm">
-              <strong>{turno.paciente.nombre}</strong> - {turno.motivo}
-              <div className="text-muted">Prioridad: {turno.prioridad}</div>
-              <button
-                onClick={() => llamarSiguiente(turno.id)}
-                className="btn btn-sm btn-warning mt-2"
-              >
-                <Phone className="inline-block mr-1" /> Llamar
-              </button>
-            </div>
-          ))
+      <SeccionTurnos
+        titulo="En Espera"
+        color="secondary"
+        turnos={enEspera}
+        boton={(turno) => (
+          <button
+            onClick={() => llamarSiguiente(turno.id)}
+            className="btn btn-sm btn-warning mt-2"
+          >
+            <Phone className="me-1" /> Llamar
+          </button>
         )}
-      </section>
+      />
 
       {/* ---------------- LLAMANDO ---------------- */}
-      <section className="mb-4">
-        <h4 className="text-info mb-2">
-          <User className="inline-block mr-2" /> Llamando ({llamando.length})
-        </h4>
-        {llamando.length === 0 ? (
-          <p>No hay pacientes llamando.</p>
-        ) : (
-          llamando.map((turno) => (
-            <div key={turno.id} className="card p-3 mb-2 shadow-sm border-info">
-              <strong>{turno.paciente.nombre}</strong> - {turno.motivo}
-              <button
-                onClick={() => iniciarAtencion(turno.id)}
-                className="btn btn-sm btn-success mt-2"
-              >
-                <Stethoscope className="inline-block mr-1" /> Iniciar Atención
-              </button>
-            </div>
-          ))
+      <SeccionTurnos
+        titulo="Llamando"
+        color="info"
+        turnos={llamando}
+        boton={(turno) => (
+          <button
+            onClick={() => iniciarAtencion(turno.id)}
+            className="btn btn-sm btn-success mt-2"
+          >
+            <Stethoscope className="me-1" /> Iniciar Atención
+          </button>
         )}
-      </section>
+      />
 
       {/* ---------------- ATENDIENDO ---------------- */}
-      <section>
-        <h4 className="text-success mb-2">
-          <CheckCircle className="inline-block mr-2" /> Atendiendo ({atendiendo.length})
+      <SeccionTurnos
+        titulo="Atendiendo"
+        color="success"
+        turnos={atendiendo}
+        boton={(turno) => (
+          <button
+            onClick={() => finalizarAtencion(turno.id)}
+            className="btn btn-sm btn-danger mt-2"
+          >
+            Finalizar Atención
+          </button>
+        )}
+      />
+
+      {/* ---------------- HISTORIAL ---------------- */}
+      <section className="mt-5">
+        <h4 className="text-muted mb-2">
+          <Archive className="me-2" /> Historial de Pacientes
         </h4>
-        {atendiendo.length === 0 ? (
-          <p>No hay pacientes en atención.</p>
+        {historial.length === 0 ? (
+          <p>No hay historial de pacientes aún.</p>
         ) : (
-          atendiendo.map((turno) => (
-            <div key={turno.id} className="card p-3 mb-2 shadow-sm border-success">
-              <strong>{turno.paciente.nombre}</strong> - {turno.motivo}
-              <button
-                onClick={() => finalizarAtencion(turno.id)}
-                className="btn btn-sm btn-danger mt-2"
-              >
-                Finalizar Atención
-              </button>
+          historial.map((turno) => (
+            <div key={turno.id} className="card p-2 mb-2 shadow-sm">
+              <strong>{turno.paciente.nombre}</strong> - Estado:{" "}
+              <span className={`badge bg-${
+                turno.estado === "enEspera" ? "secondary" :
+                turno.estado === "llamando" ? "info" : "success"
+              }`}>
+                {turno.estado}
+              </span>
             </div>
           ))
         )}
@@ -198,5 +186,23 @@ const ColaMedico = () => {
     </div>
   );
 };
+
+// Componente reutilizable para secciones
+const SeccionTurnos = ({ titulo, color, turnos, boton }) => (
+  <section className="mb-4">
+    <h4 className={`text-${color} mb-2`}>{titulo} ({turnos.length})</h4>
+    {turnos.length === 0 ? (
+      <p className="text-muted">No hay pacientes en esta etapa.</p>
+    ) : (
+      turnos.map((turno) => (
+        <div key={turno.id} className={`card p-3 mb-2 shadow-sm border-${color}`}>
+          <strong>{turno.paciente.nombre}</strong> - {turno.motivo}
+          <div className="text-muted">Prioridad: {turno.prioridad}</div>
+          {boton(turno)}
+        </div>
+      ))
+    )}
+  </section>
+);
 
 export default ColaMedico;

@@ -1,0 +1,408 @@
+/* ============================================
+   LOGIN - ESTILOS PERSONALIZADOS
+   ============================================ */
+
+/* Contenedor principal */
+.auth-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Animación de fondo con círculos */
+.auth-container::before,
+.auth-container::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  animation: float 6s ease-in-out infinite;
+}
+
+.auth-container::before {
+  width: 300px;
+  height: 300px;
+  top: -150px;
+  left: -150px;
+  animation-delay: 0s;
+}
+
+.auth-container::after {
+  width: 400px;
+  height: 400px;
+  bottom: -200px;
+  right: -200px;
+  animation-delay: 3s;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-20px) scale(1.05);
+  }
+}
+
+/* Card principal */
+.auth-card {
+  display: flex;
+  max-width: 900px;
+  width: 100%;
+  min-height: 550px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+  animation: slideUp 0.6s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================
+   PANEL IZQUIERDO (Bienvenida)
+   ============================================ */
+.auth-left {
+  flex: 1;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Decoración de círculos en el panel izquierdo */
+.auth-left::before,
+.auth-left::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.auth-left::before {
+  width: 200px;
+  height: 200px;
+  top: -100px;
+  right: -100px;
+}
+
+.auth-left::after {
+  width: 150px;
+  height: 150px;
+  bottom: -75px;
+  left: -75px;
+}
+
+.auth-left h2 {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  position: relative;
+  z-index: 1;
+}
+
+.auth-left p {
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+  opacity: 0.9;
+  position: relative;
+  z-index: 1;
+}
+
+.auth-left button {
+  padding: 0.75rem 2.5rem;
+  border: 2px solid white;
+  background: transparent;
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 1;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.auth-left button:hover {
+  background: white;
+  color: #667eea;
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.auth-left a {
+  text-decoration: none;
+}
+
+/* ============================================
+   PANEL DERECHO (Formulario)
+   ============================================ */
+.auth-right {
+  flex: 1;
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: white;
+}
+
+.auth-right h3 {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 2rem;
+  text-align: center;
+  position: relative;
+}
+
+.auth-right h3::after {
+  content: '';
+  display: block;
+  width: 60px;
+  height: 4px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  margin: 0.75rem auto 0;
+  border-radius: 2px;
+}
+
+/* Estilos de inputs */
+.auth-right .form-control {
+  padding: 0.875rem 1.25rem;
+  font-size: 1rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  background: #f8fafc;
+}
+
+.auth-right .form-control:focus {
+  outline: none;
+  border-color: #667eea;
+  background: white;
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+  transform: translateY(-2px);
+}
+
+.auth-right .form-control::placeholder {
+  color: #94a3b8;
+}
+
+/* Espaciado entre campos */
+.auth-right .mb-3 {
+  margin-bottom: 1.25rem;
+}
+
+/* Botón de submit con gradiente */
+.btn-gradient {
+  width: 100%;
+  padding: 0.875rem;
+  border: none;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  margin-top: 1rem;
+}
+
+.btn-gradient:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+}
+
+.btn-gradient:active {
+  transform: translateY(-1px);
+}
+
+/* Alertas de error */
+.auth-right .alert {
+  padding: 0.75rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+  border: none;
+  animation: shake 0.5s ease;
+}
+
+.auth-right .alert-danger {
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+  color: #dc2626;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-10px); }
+  75% { transform: translateX(10px); }
+}
+
+/* ============================================
+   EXTRAS
+   ============================================ */
+
+/* Link adicional si lo necesitas */
+.auth-right .forgot-password {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.auth-right .forgot-password a {
+  color: #667eea;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.3s ease;
+}
+
+.auth-right .forgot-password a:hover {
+  color: #764ba2;
+  text-decoration: underline;
+}
+
+/* Divider con texto */
+.auth-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 1.5rem 0;
+  color: #94a3b8;
+  font-size: 0.9rem;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.auth-divider::before {
+  margin-right: 1rem;
+}
+
+.auth-divider::after {
+  margin-left: 1rem;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+  .auth-card {
+    flex-direction: column;
+    max-width: 500px;
+    min-height: auto;
+  }
+
+  .auth-left {
+    padding: 2rem;
+    min-height: 250px;
+  }
+
+  .auth-left h2 {
+    font-size: 2rem;
+  }
+
+  .auth-left p {
+    font-size: 1rem;
+  }
+
+  .auth-right {
+    padding: 2rem;
+  }
+
+  .auth-right h3 {
+    font-size: 1.75rem;
+  }
+
+  .auth-container {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .auth-left {
+    padding: 1.5rem;
+    min-height: 200px;
+  }
+
+  .auth-left h2 {
+    font-size: 1.75rem;
+  }
+
+  .auth-left button {
+    padding: 0.625rem 2rem;
+    font-size: 0.9rem;
+  }
+
+  .auth-right {
+    padding: 1.5rem;
+  }
+
+  .auth-right h3 {
+    font-size: 1.5rem;
+  }
+
+  .auth-right .form-control {
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+  }
+
+  .btn-gradient {
+    padding: 0.75rem;
+    font-size: 1rem;
+  }
+}
+
+/* ============================================
+   SCROLLBAR PERSONALIZADO (si es necesario)
+   ============================================ */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(102, 126, 234, 0.5);
+  border-radius: 10px;
+  transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(102, 126, 234, 0.7);
+}

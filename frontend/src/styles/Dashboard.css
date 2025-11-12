@@ -1,0 +1,434 @@
+/* ============================================
+   DASHBOARD - ESTILOS PERSONALIZADOS
+   ============================================ */
+
+/* Fondo principal con gradiente */
+.dashboard-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* ============================================
+   NAVBAR CON GLASSMORPHISM
+   ============================================ */
+.navbar-glass {
+  position: sticky;
+  top: 0;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  background-color: rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  z-index: 1000;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Logo container */
+.logo-circle {
+  width: 45px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Reloj en tiempo real */
+.time-display {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 50px;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+/* Badge de notificaciones */
+.notification-badge {
+  position: absolute;
+  top: 0;
+  left: 100%;
+  transform: translate(-50%, -50%);
+  padding: 0.25rem 0.5rem;
+  border-radius: 50px;
+  background-color: #dc3545;
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+/* Avatar de usuario */
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: white;
+  color: #667eea;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.user-info-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 50px;
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+/* ============================================
+   SECCIÓN DE BIENVENIDA
+   ============================================ */
+.welcome-section {
+  text-align: center;
+  margin-bottom: 3rem;
+  animation: fadeIn 0.6s ease-out;
+}
+
+.welcome-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: white;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1rem;
+}
+
+.welcome-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 0.5rem;
+}
+
+.welcome-subtitle {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 1rem;
+}
+
+.role-badge-container {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  background-color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Gradientes para badges de roles */
+.badge-admin {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+}
+
+.badge-enfermero {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+}
+
+.badge-medico {
+  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+}
+
+/* ============================================
+   CARDS DE ACCESO RÁPIDO
+   ============================================ */
+.access-card {
+  height: 100%;
+  border: none;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 1rem;
+}
+
+.access-card:hover {
+  transform: translateY(-10px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+/* Decoración de gradiente en cards */
+.card-gradient-decoration {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 150px;
+  height: 150px;
+  opacity: 0.1;
+  border-radius: 0 0 0 100%;
+}
+
+/* Gradientes para decoración de cards */
+.gradient-blue {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+}
+
+.gradient-purple {
+  background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%);
+}
+
+.gradient-green {
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+}
+
+.gradient-orange {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+}
+
+/* Icono de card con gradiente */
+.card-icon-circle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1rem;
+}
+
+/* Flecha de acción en cards */
+.card-arrow-action {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  padding: 1rem;
+}
+
+.card-arrow-circle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  background-color: rgba(59, 130, 246, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.access-card:hover .card-arrow-circle {
+  transform: scale(1.1);
+}
+
+/* Badge en cards */
+.card-badge-blue {
+  background-color: #dbeafe;
+  color: #1e40af;
+  padding: 0.5rem 0.75rem;
+  border-radius: 50px;
+}
+
+.card-badge-purple {
+  background-color: #f3e8ff;
+  color: #7c3aed;
+  padding: 0.5rem 0.75rem;
+  border-radius: 50px;
+}
+
+/* ============================================
+   PANEL DE INFORMACIÓN
+   ============================================ */
+.info-panel {
+  border: none;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 1rem;
+}
+
+.info-panel-header-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  margin-right: 1rem;
+}
+
+.info-card-item {
+  padding: 1rem;
+  border-radius: 0.75rem;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
+}
+
+.info-card-item-clinica {
+  padding: 1rem;
+  border-radius: 0.75rem;
+  background: linear-gradient(135deg, rgba(67, 233, 123, 0.08) 0%, rgba(56, 249, 215, 0.08) 100%);
+}
+
+.info-card-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ============================================
+   ANIMACIONES
+   ============================================ */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Animación escalonada para cards */
+.card-animate-1 {
+  animation: fadeInUp 0.6s ease-out 0s backwards;
+}
+
+.card-animate-2 {
+  animation: fadeInUp 0.6s ease-out 0.1s backwards;
+}
+
+.card-animate-3 {
+  animation: fadeInUp 0.6s ease-out 0.2s backwards;
+}
+
+.card-animate-4 {
+  animation: fadeInUp 0.6s ease-out 0.3s backwards;
+}
+
+/* ============================================
+   SCROLLBAR PERSONALIZADO
+   ============================================ */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+  transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* Para Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) rgba(255, 255, 255, 0.1);
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+  .welcome-title {
+    font-size: 1.8rem;
+  }
+
+  .welcome-avatar {
+    width: 60px;
+    height: 60px;
+  }
+
+  .card-icon-circle {
+    width: 50px;
+    height: 50px;
+  }
+
+  .time-display {
+    display: none;
+  }
+}
+
+@media (max-width: 576px) {
+  .user-info-pill .user-details {
+    display: none;
+  }
+
+  .access-card:hover {
+    transform: translateY(-5px) scale(1.01);
+  }
+}
+
+/* ============================================
+   UTILIDADES ADICIONALES
+   ============================================ */
+.text-white-50 {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.bg-opacity-10 {
+  background-color: rgba(59, 130, 246, 0.1);
+}
+
+.bg-opacity-20 {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.fw-semibold {
+  font-weight: 600;
+}
+
+.shadow-lg {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+}
+
+.rounded-pill {
+  border-radius: 50rem !important;
+}
+
+/* Transiciones suaves globales */
+button, a, .card {
+  transition: all 0.3s ease;
+}
