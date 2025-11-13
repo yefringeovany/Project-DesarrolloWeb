@@ -14,7 +14,10 @@ import authRoutes from "./routes/authRoutes.js";
 import turnoRoutes from "./routes/turnoRoutes.js";
 import pacienteRoutes from "./routes/pacienteRoutes.js";
  import clinicaRoutes from "./routes/clinicaRoutes.js";
-// import usuarioRoutes from "./routes/usuarioRoutes.js";
+import usuarioRoutes from "./routes/usuarioRoutes.js";
+import routerRol from "./routes/rolRoutes.js";
+import historialTurnoRoutes from "./routes/historialTurnoRoutes.js";
+
 
 dotenv.config();
 
@@ -158,7 +161,9 @@ app.use("/api/auth", authRoutes);
  app.use("/api/turnos", turnoRoutes);
  app.use("/api/pacientes", pacienteRoutes);
 app.use("/api/clinicas", clinicaRoutes);
-// app.use("/api/usuarios", usuarioRoutes);
+app.use("/api/usuarios", usuarioRoutes);
+app.use("/api/roles", routerRol);
+app.use("/api/historial-turnos", historialTurnoRoutes);
 
 // Ruta de health check
 app.get("/api/health", (req, res) => {

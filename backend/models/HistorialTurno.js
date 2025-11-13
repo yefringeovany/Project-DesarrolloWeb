@@ -33,6 +33,11 @@ const HistorialTurno = sequelize.define("HistorialTurno", {
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW,
   }
+},
+  {
+  tableName: "HistorialTurnos", // 👈 fuerza este nombre
+  freezeTableName: true,        // 👈 evita pluralización automática
+  timestamps: true,             // 👈 mantiene createdAt y updatedAt
 });
 
 HistorialTurno.belongsTo(Turno, { foreignKey: "turnoId" });

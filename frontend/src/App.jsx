@@ -11,6 +11,10 @@ import CrearTurno from "./pages/CrearTurno";
 import ColaMedico from "./pages/ColaMedico";
 import PantallaPublica from "./pages/PantallaPublica";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Usuarios from "./pages/Usuarios";
+import HistorialTurnos from "./pages/HistorialTurnos";
+
+
 
 // ✅ Evita acceso a login o register si ya hay usuario
 const PublicRoute = ({ children }) => {
@@ -48,6 +52,14 @@ const AppRoutes = () => (
       }
     />
     <Route
+  path="/historial-turnos"
+  element={
+    <ProtectedRoute>
+      <HistorialTurnos />
+    </ProtectedRoute>
+  }
+/>
+    <Route
       path="/pacientes"
       element={
         <ProtectedRoute>
@@ -63,7 +75,14 @@ const AppRoutes = () => (
         </ProtectedRoute>
       }
     />
-    
+    <Route
+  path="/usuarios"
+  element={
+    <ProtectedRoute>
+      <Usuarios />
+    </ProtectedRoute>
+  }
+/>
     <Route
       path="/crear-turno"
       element={
