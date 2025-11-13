@@ -9,7 +9,7 @@ export const crearClinica = async (req, res) => {
   try {
     const { nombre_clinica, direccion, telefono } = req.body;
 
-    // ✅ Solo admin o enfermero pueden crear
+    // Solo admin o enfermero pueden crear
     const rolUsuario = req.usuario?.Rol?.nombre_rol?.toLowerCase();
 
     if (!["admin", "enfermero"].includes(rolUsuario)) {
@@ -71,7 +71,7 @@ export const actualizarClinica = async (req, res) => {
     const { id } = req.params;
     const { nombre_clinica, direccion, telefono } = req.body;
 
-    // ✅ Permitir admin y enfermero
+    // Permitir admin y enfermero
     const rolUsuario = req.usuario.Rol.nombre_rol.toLowerCase();
     if (rolUsuario !== "admin" && rolUsuario !== "enfermero") {
       return res.status(403).json({

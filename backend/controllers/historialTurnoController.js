@@ -1,8 +1,8 @@
 import HistorialTurno from "../models/HistorialTurno.js";
 
 /**
- * 📋 Obtener todos los registros del historial de turnos
- * 🔐 Solo lectura (GET)
+ * Obtener todos los registros del historial de turnos
+ * Solo lectura (GET)
  */
 export const obtenerHistorialTurnos = async (req, res) => {
   try {

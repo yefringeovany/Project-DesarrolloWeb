@@ -12,10 +12,10 @@ import {
 
 const routerClinica = express.Router();
 
-// ✅ Listar todas las clínicas (público o autenticado)
+// Listar todas las clínicas (público o autenticado)
 routerClinica.get("/", listarClinicas);
 
-// ✅ Crear clínica (solo admin o enfermero)
+// Crear clínica (solo admin o enfermero)
 routerClinica.post(
   "/",
   verificarToken,
@@ -23,7 +23,7 @@ routerClinica.post(
   crearClinica
 );
 
-// ✅ Actualizar clínica (solo admin)
+//Actualizar clínica (solo admin)
 routerClinica.put(
   "/:id",
   verificarToken,
@@ -31,7 +31,7 @@ routerClinica.put(
   actualizarClinica
 );
 
-// ✅ Eliminar clínica (solo admin)
+// Eliminar clínica (solo admin)
 routerClinica.delete(
   "/:id",
   verificarToken,

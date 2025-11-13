@@ -18,7 +18,7 @@ const Rol = sequelize.define("Rol", {
     type: DataTypes.STRING,
   },
 }, {
-  timestamps: false // 👈 Evita los errores con createdAt/updatedAt
+  timestamps: false // Evita los errores con createdAt/updatedAt
 });
 
 

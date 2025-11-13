@@ -14,7 +14,7 @@ export const crearTurno = async (req, res) => {
     const { pacienteId, clinicaId, motivo, prioridad = 'normal' } = req.body;
     const usuarioId = req.usuario.id;
 
-    // ✅ SOLO enfermero y admin pueden asignar turnos
+    // SOLO enfermero y admin pueden asignar turnos
     const rolUsuario = req.usuario.Rol.nombre_rol.toLowerCase();
     if (!['enfermero', 'admin'].includes(rolUsuario)) {
       return res.status(403).json({ 
@@ -94,7 +94,7 @@ export const crearTurno = async (req, res) => {
       ]
     });
 
-    // 🔥 EMISIÓN DE EVENTOS WEBSOCKET
+    // EMISIÓN DE EVENTOS WEBSOCKET
     console.log('📡 [WebSocket] Emitiendo evento turno:nuevo');
     io.emit('turno:nuevo', turnoCompleto);
     io.to(`clinica-${clinicaId}`).emit('turno:actualizado', turnoCompleto);
@@ -222,7 +222,7 @@ export const cambiarEstadoTurno = async (req, res) => {
       ]
     });
 
-    // 🔥 EMISIÓN DE EVENTOS WEBSOCKET
+    //EMISIÓN DE EVENTOS WEBSOCKET
     console.log('📡 [WebSocket] Emitiendo evento turno:cambioEstado');
 
     io.emit('turno:cambioEstado', {
@@ -449,7 +449,7 @@ export const obtenerTurnosPantalla = async (req, res) => {
 };
 
 // ==========================
-// 👨‍⚕️ FUNCIONES PARA MÉDICOS
+// FUNCIONES PARA MÉDICOS
 // ==========================
 
 // Obtener cola de turnos para el médico autenticado
@@ -600,7 +600,7 @@ export const llamarSiguientePaciente = async (req, res) => {
       ]
     });
 
-    // 🔥 WEBSOCKET
+    // WEBSOCKET
     io.emit('turno:cambioEstado', {
       ...turnoActualizado.toJSON(),
       estadoAnterior: 'espera',
@@ -681,7 +681,7 @@ export const iniciarAtencion = async (req, res) => {
       ]
     });
 
-    // 🔥 WEBSOCKET
+    // WEBSOCKET
     io.emit('turno:cambioEstado', {
       ...turnoActualizado.toJSON(),
       estadoAnterior,
@@ -764,7 +764,7 @@ export const finalizarAtencion = async (req, res) => {
       ]
     });
 
-    // 🔥 WEBSOCKET
+    // WEBSOCKET
     io.emit('turno:cambioEstado', {
       ...turnoActualizado.toJSON(),
       estadoAnterior,

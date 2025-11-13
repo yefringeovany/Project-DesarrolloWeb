@@ -33,7 +33,7 @@ const app = express();
 const httpServer = createServer(app);
 
 // =======================
-// 🔐 CONFIGURAR CORS
+// CONFIGURAR CORS
 // =======================
 const corsOptions = {
   origin: process.env.FRONTEND_URL || "http://localhost:5173",
@@ -45,11 +45,11 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // =======================
-// 🔧 MIDDLEWARES
+// MIDDLEWARES
 // =======================
 app.use(express.json());
 
-// 🛡️ Helmet - Seguridad de cabeceras HTTP
+// Helmet - Seguridad de cabeceras HTTP
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
@@ -73,7 +73,7 @@ app.use((req, res, next) => {
 });
 
 // =======================
-// 📡 CONFIGURAR SOCKET.IO
+// CONFIGURAR SOCKET.IO
 // =======================
 const io = new Server(httpServer, {
   cors: corsOptions,
@@ -151,7 +151,7 @@ io.on('connection', (socket) => {
 export { io };
 
 // =======================
-// 📦 RUTAS
+// RUTAS
 // =======================
 app.use("/api/auth/login", loginLimiter);
 
@@ -194,7 +194,7 @@ app.use((error, req, res, next) => {
 });
 
 // =======================
-// 🚀 INICIO DEL SERVIDOR
+// INICIO DEL SERVIDOR
 // =======================
 const PORT = process.env.PORT || 5000;
 

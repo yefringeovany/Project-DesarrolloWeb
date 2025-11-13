@@ -19,7 +19,7 @@ const Clinica = sequelize.define("Clinica", {
     type: DataTypes.STRING,
   },
   }, {
-  timestamps: false // 👈 Evita los errores con createdAt/updatedAt
+  timestamps: false // Evita los errores con createdAt/updatedAt
 });
 
 export default Clinica;

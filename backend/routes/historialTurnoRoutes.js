@@ -4,7 +4,7 @@ import { verificarToken } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
-// ✅ GET: todos los historiales (visible a todos los roles autenticados)
+// GET: todos los historiales (visible a todos los roles autenticados)
 router.get("/", verificarToken, obtenerHistorialTurnos);
 
 export default router;

@@ -11,10 +11,10 @@ import { verificarToken, soloAdmin } from "../middlewares/authMiddleware.js";
 
 const routerUsuario = express.Router();
 
-// ✅ Todas las rutas de usuario solo accesibles por admin
+//Todas las rutas de usuario solo accesibles por admin
 routerUsuario.use(verificarToken, soloAdmin);
 
-// 📋 CRUD de Usuarios
+//CRUD de Usuarios
 routerUsuario.get("/", obtenerUsuarios);          // Listar todos
 routerUsuario.get("/:id", obtenerUsuarioPorId);   // Ver uno
 routerUsuario.post("/", crearUsuario);            // Crear

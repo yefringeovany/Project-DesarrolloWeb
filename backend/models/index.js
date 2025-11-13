@@ -8,7 +8,7 @@ export const sequelize = new Sequelize(
   process.env.DB_USER,
   process.env.DB_PASSWORD,
   {
-    host: process.env.DB_SERVER, // 👈 usa el mismo nombre que tu .env
+    host: process.env.DB_SERVER, // usa el mismo nombre que tu .env
     dialect: "mssql",
     port: 1433,
     dialectOptions: {

@@ -5,7 +5,7 @@ import Clinica from "../models/Clinica.js";
 import { generarHash } from "../utils/hash.js";
 
 // =============================
-// 📋 Obtener todos los usuarios
+// Obtener todos los usuarios
 // =============================
 export const obtenerUsuarios = async (req, res) => {
   try {
@@ -26,7 +26,7 @@ export const obtenerUsuarios = async (req, res) => {
 };
 
 // =============================
-// 🔍 Obtener usuario por ID
+// Obtener usuario por ID
 // =============================
 export const obtenerUsuarioPorId = async (req, res) => {
   try {
@@ -51,7 +51,7 @@ export const obtenerUsuarioPorId = async (req, res) => {
 };
 
 // =============================
-// ➕ Crear nuevo usuario
+// Crear nuevo usuario
 // =============================
 export const crearUsuario = async (req, res) => {
   try {
@@ -93,7 +93,7 @@ export const crearUsuario = async (req, res) => {
 };
 
 // =============================
-// ✏️ Actualizar usuario
+// Actualizar usuario
 // =============================
 export const actualizarUsuario = async (req, res) => {
   try {
@@ -136,7 +136,7 @@ export const actualizarUsuario = async (req, res) => {
 };
 
 // =============================
-// ❌ Eliminar usuario
+// Eliminar usuario
 // =============================
 export const eliminarUsuario = async (req, res) => {
   try {
