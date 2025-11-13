@@ -47,54 +47,58 @@
 }
 
 /* ===============================
-   CARDS DE TURNOS
+   CARD / TABLA
 =================================*/
-.cards-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.5rem;
+.glass-card.tabla-card {
   width: 100%;
   max-width: 1200px;
-}
-
-.turno-card {
   background: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border-radius: 15px;
+  border-radius: 20px;
   padding: 1.5rem;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  cursor: pointer;
-}
-
-.turno-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  overflow-x: auto;
+  animation: fadeInUp 0.7s ease;
 }
 
 /* ===============================
-   CABECERA DE CARD
+   TABLA
 =================================*/
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
+.historial-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+  color: #fff;
 }
 
-.turno-id {
-  font-weight: bold;
-  font-size: 1rem;
+.historial-tabla th {
+  background-color: rgba(255, 255, 255, 0.25);
+  padding: 0.75rem;
+  font-weight: 600;
+  font-size: 0.95rem;
 }
 
+.historial-tabla td {
+  padding: 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.9rem;
+}
+
+.historial-tabla tr:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  transition: background-color 0.3s ease;
+}
+
+/* ===============================
+   ESTADOS / BADGES
+=================================*/
 .estado-badge {
-  padding: 5px 12px;
+  padding: 4px 10px;
   border-radius: 12px;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
   display: inline-block;
 }
 
@@ -114,16 +118,8 @@
 }
 
 /* ===============================
-   CUERPO DE CARD
+   TEXTOS / ALERTAS
 =================================*/
-.card-body p {
-  margin: 0.3rem 0;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.95rem;
-}
-
 .loading-text,
 .empty-text {
   color: #f0f0f0;
@@ -132,9 +128,6 @@
   text-align: center;
 }
 
-/* ===============================
-   ALERTAS
-=================================*/
 .alert.error {
   background: rgba(239, 68, 68, 0.3);
   color: #ffd6d6;
@@ -143,4 +136,18 @@
   text-align: center;
   font-weight: 500;
   margin-top: 1rem;
+}
+
+/* ===============================
+   ANIMACIONES
+=================================*/
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(25px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

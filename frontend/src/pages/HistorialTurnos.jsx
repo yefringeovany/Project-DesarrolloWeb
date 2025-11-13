@@ -48,38 +48,49 @@ const HistorialTurnos = () => {
         <p className="empty-text">No hay registros en el historial todavía.</p>
       )}
 
-      <div className="cards-container">
-        {historial.map((item) => (
-          <div key={item.id} className="turno-card">
-            <div className="card-header">
-              <span className="turno-id">#Turno {item.turnoId}</span>
-              <span
-                className={`estado-badge ${
-                  item.estadoNuevo === "finalizado"
-                    ? "estado-finalizado"
-                    : item.estadoNuevo === "cancelado"
-                    ? "estado-cancelado"
-                    : "estado-en-espera"
-                }`}
-              >
-                {item.estadoNuevo}
-              </span>
-            </div>
-            <div className="card-body">
-              <p>
-                <strong>Usuario:</strong> {item.usuario?.nombre || "Sistema"}
-              </p>
-              <p>
-                <strong>Comentario:</strong> {item.comentario || "—"}
-              </p>
-              <p>
-                <Clock size={14} className="me-1 text-muted" />
-                {new Date(item.createdAt).toLocaleString("es-GT")}
-              </p>
-            </div>
-          </div>
-        ))}
-      </div>
+      {!loading && historial.length > 0 && (
+        <div className="glass-card tabla-card">
+          <table className="historial-tabla">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Turno</th>
+                <th>Estado Nuevo</th>
+                <th>Comentario</th>
+                <th>Usuario</th>
+                <th>Fecha / Hora</th>
+              </tr>
+            </thead>
+            <tbody>
+              {historial.map((item, index) => (
+                <tr key={item.id}>
+                  <td>{index + 1}</td>
+                  <td>{item.turnoId}</td>
+                  <td>
+                    <span
+                      className={`estado-badge ${
+                        item.estadoNuevo === "finalizado"
+                          ? "estado-finalizado"
+                          : item.estadoNuevo === "cancelado"
+                          ? "estado-cancelado"
+                          : "estado-en-espera"
+                      }`}
+                    >
+                      {item.estadoNuevo}
+                    </span>
+                  </td>
+                  <td>{item.comentario || "—"}</td>
+                  <td>{item.usuario?.nombre || "Sistema"}</td>
+                  <td>
+                    <Clock size={14} className="me-1 text-muted" />
+                    {new Date(item.createdAt).toLocaleString("es-GT")}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 };

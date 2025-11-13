@@ -1,6 +1,29 @@
 /* ============================================
-   PANTALLA PÚBLICA - ESTILOS PERSONALIZADOS
+   PANTALLA PÚBLICA - DISEÑO MEJORADO
    ============================================ */
+
+/* Variables CSS */
+:root {
+  --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  --success-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  --warning-gradient: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  --danger-gradient: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  --info-gradient: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  
+  --glass-bg: rgba(255, 255, 255, 0.1);
+  --glass-bg-strong: rgba(255, 255, 255, 0.15);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.15);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.2);
+  --shadow-xl: 0 12px 32px rgba(0, 0, 0, 0.25);
+  
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+}
 
 /* Reset básico */
 * {
@@ -12,155 +35,55 @@
 /* Contenedor principal */
 .pantalla-publica {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--primary-gradient);
   color: white;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   overflow-x: hidden;
   position: relative;
 }
 
-/* Animación de fondo con círculos flotantes */
-.pantalla-publica::before,
-.pantalla-publica::after {
-  content: '';
-  position: absolute;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.05);
-  animation: float 8s ease-in-out infinite;
-  pointer-events: none;
-}
-
+/* Patrón de fondo mejorado */
 .pantalla-publica::before {
-  width: 400px;
-  height: 400px;
-  top: -200px;
-  left: -200px;
-  animation-delay: 0s;
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.06) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.04) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+  animation: backgroundPulse 20s ease-in-out infinite;
 }
 
-.pantalla-publica::after {
-  width: 500px;
-  height: 500px;
-  bottom: -250px;
-  right: -250px;
-  animation-delay: 4s;
+@keyframes backgroundPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
 }
 
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0) scale(1);
-    opacity: 0.05;
-  }
-  50% {
-    transform: translateY(-30px) scale(1.1);
-    opacity: 0.08;
-  }
+.pantalla-publica > * {
+  position: relative;
+  z-index: 1;
 }
 
 /* ============================================
    HEADER
    ============================================ */
 .pantalla-header {
-  background: rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  padding: 2rem;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 1.5rem 2rem;
   text-align: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow-md);
   position: sticky;
   top: 0;
   z-index: 100;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.pantalla-header-content {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-.pantalla-logo {
-  width: 60px;
-  height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
-.pantalla-header h1 {
-  font-size: 2.8rem;
-  font-weight: bold;
-  margin: 0;
-  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
-  letter-spacing: 1px;
-}
-
-.status-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.6rem 1.5rem;
-  border-radius: 50px;
-  font-size: 0.95rem;
-  font-weight: 600;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.status-conectado {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  animation: pulse 2s infinite;
-}
-
-.status-desconectado {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-}
-
-@keyframes pulse {
-  0%, 100% { 
-    opacity: 1;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  }
-  50% { 
-    opacity: 0.8;
-    box-shadow: 0 4px 16px rgba(16, 185, 129, 0.5);
-  }
-}
-
-/* ============================================
-   BANNER DE ÚLTIMO LLAMADO
-   ============================================ */
-.ultimo-llamado {
-  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-  padding: 3rem 2rem;
-  text-align: center;
-  animation: slideDown 0.6s ease-out, pulse-bg 2s infinite;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-  color: #1f2937;
-  position: relative;
-  overflow: hidden;
-}
-
-.ultimo-llamado::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
-  animation: rotate 10s linear infinite;
-}
-
-@keyframes rotate {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  border-bottom: 2px solid var(--glass-border);
+  animation: slideDown 0.5s ease-out;
 }
 
 @keyframes slideDown {
@@ -174,13 +97,125 @@
   }
 }
 
-@keyframes pulse-bg {
+.pantalla-header-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.pantalla-logo {
+  width: 55px;
+  height: 55px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+  box-shadow: var(--shadow-md);
+  transition: transform var(--transition-normal);
+  color: #667eea;
+}
+
+.pantalla-logo:hover {
+  transform: rotate(360deg) scale(1.1);
+}
+
+.pantalla-header h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin: 0;
+  background: linear-gradient(135deg, #ffffff 0%, #e0e7ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 2px 10px rgba(255, 255, 255, 0.3);
+  letter-spacing: 1.5px;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.25rem;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  box-shadow: var(--shadow-sm);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border: 2px solid transparent;
+  transition: all var(--transition-normal);
+}
+
+.status-conectado {
+  background: var(--success-gradient);
+  border-color: rgba(16, 185, 129, 0.3);
+  animation: pulseStatus 2s infinite;
+}
+
+.status-desconectado {
+  background: var(--danger-gradient);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+@keyframes pulseStatus {
   0%, 100% { 
-    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
   }
   50% { 
-    background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+    box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
   }
+}
+
+/* ============================================
+   BANNER DE ÚLTIMO LLAMADO
+   ============================================ */
+.ultimo-llamado {
+  background: var(--warning-gradient);
+  padding: 2.5rem 2rem;
+  text-align: center;
+  animation: bannerEntrance 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  box-shadow: var(--shadow-xl);
+  color: #1f2937;
+  position: relative;
+  overflow: hidden;
+  border-bottom: 4px solid rgba(217, 119, 6, 0.5);
+}
+
+@keyframes bannerEntrance {
+  from {
+    transform: translateY(-100%) scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+/* Efecto de brillo animado */
+.ultimo-llamado::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  animation: shine 3s ease-in-out infinite;
+}
+
+@keyframes shine {
+  0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+  100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
 }
 
 .ultimo-llamado-content {
@@ -189,107 +224,72 @@
 }
 
 .ultimo-llamado-label {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
   text-transform: uppercase;
-  letter-spacing: 2px;
+  letter-spacing: 3px;
+  animation: pulse 1.5s ease-in-out infinite;
 }
 
 .ultimo-llamado-numero {
-  font-size: 4.5rem;
-  font-weight: bold;
-  margin-bottom: 1rem;
-  text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.2);
-  animation: bounce 1s ease-out;
+  font-size: 4rem;
+  font-weight: 900;
+  margin-bottom: 0.75rem;
+  text-shadow: 3px 3px 8px rgba(0, 0, 0, 0.3);
+  animation: scaleIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  letter-spacing: 3px;
 }
 
-@keyframes bounce {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
+@keyframes scaleIn {
+  0% { 
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  100% { 
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .ultimo-llamado-paciente {
-  font-size: 2.5rem;
-  font-weight: 600;
-  margin-bottom: 0.75rem;
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  animation: fadeIn 0.8s ease-out 0.2s both;
 }
 
 .ultimo-llamado-clinica {
-  font-size: 1.5rem;
+  font-size: 1.3rem;
+  font-weight: 600;
   opacity: 0.9;
+  animation: fadeIn 0.8s ease-out 0.4s both;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* ============================================
    CONTENEDOR PRINCIPAL
    ============================================ */
 .pantalla-contenedor {
-  padding: 2.5rem 2rem;
-  max-width: 1600px;
+  padding: 2rem;
+  max-width: 1800px;
   margin: 0 auto;
-  position: relative;
-  z-index: 1;
+  padding-bottom: 5rem;
 }
 
 .pantalla-seccion {
-  margin-bottom: 3rem;
-  animation: fadeIn 0.6s ease-out;
-}
-
-.seccion-titulo {
-  font-size: 2rem;
-  font-weight: bold;
-  margin-bottom: 1.5rem;
-  padding-bottom: 1rem;
-  border-bottom: 3px solid rgba(255, 255, 255, 0.2);
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-/* ============================================
-   GRID DE TURNOS
-   ============================================ */
-.turnos-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 2rem;
-}
-
-/* ============================================
-   TARJETA DE TURNO
-   ============================================ */
-.turno-card {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-radius: 20px;
-  padding: 2rem;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-  transition: all 0.4s ease;
+  margin-bottom: 2.5rem;
   animation: fadeInUp 0.6s ease-out;
-  position: relative;
-  overflow: hidden;
-}
-
-.turno-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 150px;
-  height: 150px;
-  background: rgba(102, 126, 234, 0.05);
-  border-radius: 0 0 0 100%;
-  transition: all 0.4s ease;
-}
-
-.turno-card:hover::before {
-  width: 200px;
-  height: 200px;
 }
 
 @keyframes fadeInUp {
@@ -303,65 +303,111 @@
   }
 }
 
-.turno-card:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+.seccion-titulo {
+  font-size: 1.8rem;
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+  padding: 1rem 1.5rem;
+  background: var(--glass-bg-strong);
+  backdrop-filter: blur(15px);
+  border-radius: 16px;
+  border: 2px solid var(--glass-border);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-md);
 }
 
-/* Animación de salida */
+/* ============================================
+   GRID DE TURNOS
+   ============================================ */
+.turnos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1.5rem;
+}
+
+/* ============================================
+   TARJETA DE TURNO
+   ============================================ */
+.turno-card {
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 24px;
+  padding: 2rem;
+  box-shadow: var(--shadow-md);
+  position: relative;
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  /* Sin animaciones */
+}
+
+/* Decoración de fondo de la tarjeta */
+.turno-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(102, 126, 234, 0.03) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* Animación de salida mejorada */
 .turno-card.saliendo {
-  animation: fadeOutDown 0.6s ease-out forwards;
+  animation: cardExit 0.5s ease-out forwards;
 }
 
-@keyframes fadeOutDown {
-  from {
+@keyframes cardExit {
+  0% {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: scale(1) translateY(0);
   }
-  to {
+  100% {
     opacity: 0;
-    transform: translateY(30px) scale(0.9);
+    transform: scale(0.9) translateY(30px) rotateX(20deg);
   }
 }
 
-/* Variantes de cards por estado */
+/* Variantes por estado */
 .turno-card.llamando {
-  border: 4px solid #fbbf24;
+  border: 3px solid #f59e0b;
   background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
-  animation: fadeInUp 0.6s ease-out, shake 0.6s ease-out 0.3s;
-  box-shadow: 0 8px 20px rgba(251, 191, 36, 0.4);
-}
-
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-8px); }
-  75% { transform: translateX(8px); }
+  box-shadow: 0 8px 24px rgba(245, 158, 11, 0.4), 0 0 0 4px rgba(245, 158, 11, 0.1);
+  /* Sin animación shake */
 }
 
 .turno-card.atendiendo {
   border: 3px solid #3b82f6;
-  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3), 0 0 0 4px rgba(59, 130, 246, 0.1);
 }
 
 .turno-card.cola {
-  background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
   color: #1f2937;
-  opacity: 0.92;
+  opacity: 0.95;
+  border-color: rgba(107, 114, 128, 0.2);
 }
 
 /* ============================================
    CONTENIDO DE TARJETA
    ============================================ */
 .turno-numero {
-  font-size: 3rem;
-  font-weight: bold;
+  font-size: 3.5rem;
+  font-weight: 900;
   color: #1e40af;
   text-align: center;
-  margin-bottom: 1.25rem;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1rem;
+  text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.1);
   position: relative;
   z-index: 1;
+  letter-spacing: 2px;
 }
 
 .turno-estado {
@@ -371,58 +417,59 @@
   z-index: 1;
 }
 
-.badge-llamando {
-  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-  color: #1f2937;
-  padding: 0.6rem 1.25rem;
+/* Badges mejorados */
+.badge-llamando,
+.badge-atendiendo,
+.badge-espera {
+  padding: 0.65rem 1.5rem;
   border-radius: 50px;
-  font-weight: bold;
-  font-size: 0.95rem;
+  font-weight: 800;
+  font-size: 0.9rem;
   display: inline-block;
-  box-shadow: 0 4px 8px rgba(251, 191, 36, 0.3);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 1.5px;
+  position: relative;
+  overflow: hidden;
+  border: 2px solid transparent;
+}
+
+.badge-llamando {
+  background: var(--warning-gradient);
+  color: #1f2937;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+  border-color: rgba(217, 119, 6, 0.3);
+  /* Sin animación de pulso */
 }
 
 .badge-atendiendo {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  background: var(--info-gradient);
   color: white;
-  padding: 0.6rem 1.25rem;
-  border-radius: 50px;
-  font-weight: bold;
-  font-size: 0.95rem;
-  display: inline-block;
-  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+  border-color: rgba(37, 99, 235, 0.3);
 }
 
 .badge-espera {
   background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
   color: white;
-  padding: 0.6rem 1.25rem;
-  border-radius: 50px;
-  font-weight: 600;
-  font-size: 0.9rem;
-  display: inline-block;
-  box-shadow: 0 4px 8px rgba(107, 114, 128, 0.3);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+  border-color: rgba(75, 85, 99, 0.3);
 }
 
 .turno-paciente {
-  font-size: 1.5rem;
-  font-weight: 600;
+  font-size: 1.6rem;
+  font-weight: 700;
   color: #1f2937;
   text-align: center;
   margin-bottom: 0.75rem;
   position: relative;
   z-index: 1;
+  line-height: 1.3;
 }
 
 .turno-clinica {
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   color: #6b7280;
+  font-weight: 600;
   text-align: center;
   margin-bottom: 0.75rem;
   display: flex;
@@ -436,26 +483,34 @@
 .turno-prioridad {
   text-align: center;
   margin-top: 1.25rem;
-  padding: 0.6rem;
+  padding: 0.65rem 1rem;
   border-radius: 12px;
-  font-weight: bold;
-  font-size: 0.95rem;
+  font-weight: 800;
+  font-size: 0.9rem;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 1.5px;
   position: relative;
   z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 2px solid transparent;
 }
 
 .turno-prioridad.emergencia {
   background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
   color: #dc2626;
-  box-shadow: 0 4px 8px rgba(220, 38, 38, 0.2);
+  border-color: rgba(220, 38, 38, 0.3);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+  /* Sin animación de pulso */
 }
 
 .turno-prioridad.urgente {
   background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
   color: #d97706;
-  box-shadow: 0 4px 8px rgba(217, 119, 6, 0.2);
+  border-color: rgba(217, 119, 6, 0.3);
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
 }
 
 /* ============================================
@@ -464,13 +519,16 @@
 .mensaje-vacio {
   text-align: center;
   padding: 4rem 2rem;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-radius: 20px;
+  background: var(--glass-bg-strong);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-radius: 24px;
   font-size: 1.3rem;
-  color: rgba(255, 255, 255, 0.8);
-  border: 2px dashed rgba(255, 255, 255, 0.2);
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  border: 2px dashed var(--glass-border);
+  box-shadow: var(--shadow-md);
+  animation: fadeIn 0.8s ease-out;
 }
 
 /* ============================================
@@ -482,60 +540,64 @@
   left: 0;
   right: 0;
   background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  padding: 1rem;
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  padding: 0.75rem 1rem;
   text-align: center;
-  font-size: 0.95rem;
-  color: rgba(255, 255, 255, 0.9);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.95);
+  border-top: 2px solid var(--glass-border);
   z-index: 50;
+  letter-spacing: 0.5px;
 }
 
 /* ============================================
    SCROLLBAR PERSONALIZADO
    ============================================ */
 .pantalla-publica::-webkit-scrollbar {
-  width: 10px;
+  width: 12px;
 }
 
 .pantalla-publica::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(0, 0, 0, 0.2);
   border-radius: 10px;
+  margin: 5px;
 }
 
 .pantalla-publica::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.2) 100%);
   border-radius: 10px;
-  transition: background 0.3s ease;
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  transition: background var(--transition-normal);
 }
 
 .pantalla-publica::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.3) 100%);
 }
 
 /* ============================================
    RESPONSIVE
    ============================================ */
-@media (max-width: 1024px) {
+@media (max-width: 1200px) {
   .turnos-grid {
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.25rem;
   }
 }
 
 @media (max-width: 768px) {
-  .pantalla-header h1 {
-    font-size: 2rem;
+  .pantalla-header {
+    padding: 1.25rem 1.5rem;
   }
 
-  .pantalla-header {
-    padding: 1.5rem;
+  .pantalla-header h1 {
+    font-size: 1.8rem;
   }
 
   .pantalla-logo {
-    width: 50px;
-    height: 50px;
+    width: 45px;
+    height: 45px;
   }
 
   .ultimo-llamado {
@@ -551,7 +613,7 @@
   }
 
   .ultimo-llamado-clinica {
-    font-size: 1.2rem;
+    font-size: 1.15rem;
   }
 
   .turnos-grid {
@@ -561,39 +623,42 @@
 
   .seccion-titulo {
     font-size: 1.5rem;
+    padding: 0.85rem 1.25rem;
   }
 
   .turno-numero {
-    font-size: 2.5rem;
+    font-size: 3rem;
   }
 
   .turno-paciente {
-    font-size: 1.3rem;
+    font-size: 1.4rem;
   }
 
   .pantalla-contenedor {
-    padding: 2rem 1.5rem;
+    padding: 1.5rem;
+    padding-bottom: 4rem;
   }
 
   .pantalla-footer {
-    font-size: 0.85rem;
-    padding: 0.75rem;
+    font-size: 0.8rem;
+    padding: 0.65rem 0.85rem;
   }
 }
 
 @media (max-width: 576px) {
   .pantalla-header-content {
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 0.5rem;
   }
 
   .pantalla-header h1 {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
+    letter-spacing: 1px;
   }
 
   .status-badge {
-    font-size: 0.85rem;
-    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+    padding: 0.45rem 1rem;
   }
 
   .turno-card {
@@ -601,122 +666,34 @@
   }
 
   .turno-card:hover {
-    transform: translateY(-5px) scale(1.01);
+    transform: translateY(-5px);
   }
-}
 
-/* Badge de estado de audio */
-.status-audio {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
-  animation: pulseAudio 2s ease-in-out infinite;
-}
-
-@keyframes pulseAudio {
-  0%, 100% {
-    box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
+  .turno-numero {
+    font-size: 2.5rem;
   }
-  50% {
-    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.6);
-  }
-}
 
-/* Icono de audio en el badge */
-.audio-icon {
-  display: inline-block;
-  animation: bounce 1s ease-in-out infinite;
-}
-
-@keyframes bounce {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-3px);
-  }
-}
-
-/* Icono de audio pulsante */
-.audio-icon-pulse {
-  display: inline-block;
-  animation: pulse 1.5s ease-in-out infinite;
-  color: #ff6b6b;
-}
-
-@keyframes pulse {
-  0%, 100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  50% {
-    transform: scale(1.2);
-    opacity: 0.8;
-  }
-}
-
-/* Indicador de reproducción en tarjetas */
-.turno-card.llamando .badge-llamando {
-  position: relative;
-}
-
-.turno-card.llamando .badge-llamando .audio-icon {
-  margin-left: 0.25rem;
-  color: #fff;
-}
-
-/* Efecto de ondas sonoras */
-@keyframes soundWave {
-  0%, 100% {
-    transform: scaleY(1);
-  }
-  50% {
-    transform: scaleY(1.5);
-  }
-}
-
-.sound-wave {
-  display: inline-flex;
-  gap: 2px;
-  align-items: center;
-  margin-left: 0.5rem;
-}
-
-.sound-wave span {
-  width: 3px;
-  height: 12px;
-  background: currentColor;
-  border-radius: 2px;
-  animation: soundWave 0.6s ease-in-out infinite;
-}
-
-.sound-wave span:nth-child(2) {
-  animation-delay: 0.2s;
-}
-
-.sound-wave span:nth-child(3) {
-  animation-delay: 0.4s;
-}
-
-/* Mejora visual del banner cuando hay audio */
-.ultimo-llamado .audio-icon-pulse {
-  animation: pulse 1s ease-in-out infinite;
-  filter: drop-shadow(0 0 8px rgba(255, 107, 107, 0.8));
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .status-audio {
-    font-size: 0.75rem;
-    padding: 0.4rem 0.8rem;
+  .ultimo-llamado-numero {
+    font-size: 2.5rem;
   }
   
-  .audio-icon-pulse {
-    width: 20px;
-    height: 20px;
+  .mensaje-vacio {
+    font-size: 1.1rem;
+    padding: 3rem 1.5rem;
+  }
+}
+
+/* ============================================
+   MEJORAS DE RENDIMIENTO
+   ============================================ */
+
+/* Animaciones optimizadas para dispositivos de bajo rendimiento */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

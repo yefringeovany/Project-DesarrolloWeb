@@ -208,3 +208,12 @@
   from { opacity: 0; transform: translateY(25px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* ===============================
+   CENTRAR LA CARD DE LISTA DE USUARIOS
+=================================*/
+.tabla-card {
+  max-width: 1000px; /* opcional: ajusta el ancho máximo */
+  margin: 0 auto; /* centra horizontalmente */
+  text-align: center; /* centra el contenido dentro */
+}

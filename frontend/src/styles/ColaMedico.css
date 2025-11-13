@@ -1,114 +1,294 @@
 /* ===============================
+   VARIABLES Y RESET
+=================================*/
+:root {
+  --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  --warning-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+  --danger-gradient: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+  --glass-bg: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --shadow-sm: 0 4px 15px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 8px 30px rgba(0, 0, 0, 0.15);
+  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.2);
+}
+
+/* ===============================
    DISEÑO GENERAL
 =================================*/
 .cola-medico-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  position: relative;
   padding: 2rem;
   color: #fff;
-  font-family: "Poppins", sans-serif;
+  font-family: "Inter", "Poppins", sans-serif;
   animation: fadeIn 0.6s ease-out;
+  overflow-x: hidden;
+}
+
+/* Efecto de partículas de fondo */
+.cola-medico-page::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 50px 50px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.cola-medico-page > * {
+  position: relative;
+  z-index: 1;
 }
 
 /* ===============================
-   HEADER
-=================================*/
-.cola-medico-header {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-.titulo {
-  font-size: 2.5rem;
-  font-weight: 700;
-  text-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
-}
-
-.subtitulo {
-  font-size: 1rem;
-  color: rgba(255, 255, 255, 0.85);
-}
-
-/* ===============================
-   CARD TRANSLÚCIDA
-=================================*/
-.glass-card {
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(12px);
-  border-radius: 20px;
-  padding: 2rem;
-  margin-bottom: 1.5rem;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-  animation: fadeInUp 0.7s ease;
-}
-
-/* ===============================
-   BOTONES
-=================================*/
-.btn-modern {
-  border: none;
-  border-radius: 12px;
-  padding: 0.6rem 1.2rem;
-  font-weight: 600;
-  color: white;
-  transition: all 0.3s ease;
-}
-
-.btn-green {
-  background: linear-gradient(135deg, #22c55e, #16a34a);
-}
-
-.btn-red {
-  background: linear-gradient(135deg, #ef4444, #b91c1c);
-}
-
-.btn-yellow {
-  background: linear-gradient(135deg, #f59e0b, #d97706);
-}
-
-.btn-modern:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
-}
-
-/* ===============================
-   BOTÓN REGRESAR
+   HEADER TOP
 =================================*/
 .header-top {
   display: flex;
   justify-content: flex-start;
   margin-bottom: 1.5rem;
+  animation: slideInLeft 0.5s ease-out;
 }
 
 .btn-back {
-  background: linear-gradient(135deg, #f59e0b, #d97706);
-  border: none;
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
   color: white;
   font-weight: 600;
-  padding: 0.6rem 1.2rem;
-  border-radius: 10px;
-  transition: all 0.3s ease;
+  padding: 0.75rem 1.5rem;
+  border-radius: 15px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  box-shadow: var(--shadow-sm);
 }
 
 .btn-back:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 15px rgba(255, 186, 73, 0.4);
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateX(-5px);
+  box-shadow: var(--shadow-md);
 }
 
 /* ===============================
-   TURNOS
+   HEADER PRINCIPAL
+=================================*/
+.cola-medico-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+  animation: fadeInDown 0.7s ease-out;
+}
+
+.titulo {
+  font-size: 3rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #ffffff 0%, #e0e7ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 4px 20px rgba(255, 255, 255, 0.3);
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.subtitulo {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+/* ===============================
+   GLASS CARDS
+=================================*/
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 24px;
+  padding: 2rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-md);
+  animation: fadeInUp 0.7s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-lg);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* ===============================
+   SECCIÓN DE TURNOS
+=================================*/
+.seccion-turnos {
+  width: 100%;
+}
+
+.seccion-titulo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #fff;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+/* ===============================
+   TARJETAS DE TURNOS
 =================================*/
 .turno-card {
-  background: rgba(255, 255, 255, 0.2);
-  padding: 1rem;
-  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 1.5rem;
   margin-bottom: 1rem;
-  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Efecto de brillo en hover */
+.turno-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  transform: rotate(45deg);
+  transition: all 0.5s;
+  opacity: 0;
+}
+
+.turno-card:hover::before {
+  opacity: 1;
+  left: 100%;
 }
 
 .turno-card:hover {
+  background: rgba(255, 255, 255, 1);
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
+  border-color: rgba(102, 126, 234, 0.3);
+}
+
+/* Texto dentro de turno-card */
+.turno-card strong {
+  color: #1e293b;
+  font-weight: 700;
+  font-size: 1.1rem;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.turno-card .text-light {
+  color: #64748b !important;
+  font-weight: 500;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+/* Badge de prioridad */
+.turno-card .text-light::before {
+  content: '●';
+  font-size: 1.2rem;
+  color: #f59e0b;
+}
+
+/* ===============================
+   BOTONES MODERNOS
+=================================*/
+.btn-modern {
+  border: none;
+  border-radius: 12px;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  color: white;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Efecto ripple en botones */
+.btn-modern::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
   background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.btn-modern:active::after {
+  width: 300px;
+  height: 300px;
+}
+
+.btn-green {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.btn-green:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
   transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+}
+
+.btn-red {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+.btn-red:hover {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
+}
+
+.btn-yellow {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.btn-yellow:hover {
+  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(245, 158, 11, 0.4);
 }
 
 /* ===============================
@@ -116,39 +296,168 @@
 =================================*/
 .historial-item {
   background: rgba(255, 255, 255, 0.15);
-  padding: 0.8rem 1rem;
-  border-radius: 10px;
-  margin-bottom: 0.6rem;
+  backdrop-filter: blur(10px);
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 0.75rem;
   display: flex;
   align-items: center;
-  transition: all 0.3s ease;
+  gap: 0.75rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .historial-item:hover {
   background: rgba(255, 255, 255, 0.25);
-  transform: translateY(-3px);
+  transform: translateX(10px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.historial-item strong {
+  color: #fff;
+  font-weight: 600;
+}
+
+.historial-item .estado {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
+  padding: 0.25rem 0.75rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  margin-left: auto;
+}
+
+/* ===============================
+   ESTADO VACÍO
+=================================*/
+.text-light {
+  color: rgba(255, 255, 255, 0.7) !important;
+  font-style: italic;
+  padding: 1rem;
+  text-align: center;
 }
 
 /* ===============================
    ALERTAS
 =================================*/
 .alert.error {
-  background: rgba(239, 68, 68, 0.3);
+  background: rgba(239, 68, 68, 0.2);
+  backdrop-filter: blur(10px);
   color: #ffd6d6;
-  padding: 0.75rem;
-  border-radius: 10px;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  box-shadow: var(--shadow-sm);
+  animation: shake 0.5s ease;
+}
+
+.no-access-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: #fff;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
 /* ===============================
    ANIMACIONES
 =================================*/
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { 
+    opacity: 0; 
+    transform: scale(0.95);
+  }
+  to { 
+    opacity: 1; 
+    transform: scale(1);
+  }
 }
 
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(25px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { 
+    opacity: 0; 
+    transform: translateY(30px);
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0);
+  }
 }
 
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-10px); }
+  75% { transform: translateX(10px); }
+}
+
+/* ===============================
+   RESPONSIVE
+=================================*/
+@media (max-width: 768px) {
+  .cola-medico-page {
+    padding: 1rem;
+  }
+
+  .titulo {
+    font-size: 2rem;
+  }
+
+  .glass-card {
+    padding: 1.5rem;
+  }
+
+  .turno-card {
+    padding: 1rem;
+  }
+
+  .btn-modern {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* ===============================
+   SCROLL PERSONALIZADO
+=================================*/
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}

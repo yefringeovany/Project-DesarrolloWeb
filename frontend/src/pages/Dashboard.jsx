@@ -91,13 +91,6 @@ const Dashboard = () => {
       route: "/pacientes",
     },
     {
-      title: "Gestión de Turnos",
-      description: "Administrar cola de turnos",
-      icon: FileText,
-      gradient: "gradient-orange",
-      route: "/turnos",
-    },
-    {
   title: "Historial de Turnos",
   description: "Visualiza todos los turnos registrados en el sistema",
   icon: FileText,
@@ -191,13 +184,7 @@ const Dashboard = () => {
                   })}
                 </span>
               </div>
-
-              {/* NOTIFICACIONES */}
-              <button className="btn btn-link text-white position-relative p-2">
-                <Bell size={22} />
-                <span className="notification-badge">3</span>
-              </button>
-
+              
               {/* USUARIO */}
               <div className="user-info-pill">
                 <div className="user-avatar">

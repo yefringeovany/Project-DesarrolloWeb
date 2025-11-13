@@ -150,11 +150,6 @@ const Login = () => {
               )}
             </button>
           </form>
-
-          {/* Link adicional (opcional) */}
-          <div className="forgot-password mt-3">
-            <a href="#">¿Olvidaste tu contraseña?</a>
-          </div>
         </div>
       </div>
     </div>
