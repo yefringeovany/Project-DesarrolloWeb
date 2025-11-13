@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom"; // 👈 Importar useNavigate
+import { useNavigate } from "react-router-dom"; // Importar useNavigate
 import {
   obtenerPacientes,
   crearPaciente,
@@ -12,7 +12,7 @@ import "../styles/Paciente.css";
 
 const Pacientes = () => {
   const { usuario } = useAuth();
-  const navigate = useNavigate(); // 👈 Hook para redirigir
+  const navigate = useNavigate(); // Hook para redirigir
   const [pacientes, setPacientes] = useState([]);
   const [form, setForm] = useState({
     nombre: "",
@@ -105,7 +105,7 @@ const Pacientes = () => {
       <header className="pacientes-header">
         <div className="header-top">
           <h1 className="titulo">👨‍⚕️ Gestión de Pacientes</h1>
-          {/* 👇 Botón para regresar */}
+          {/* Botón para regresar */}
           <button
             className="btn-modern btn-back"
             onClick={() => navigate("/dashboard")}

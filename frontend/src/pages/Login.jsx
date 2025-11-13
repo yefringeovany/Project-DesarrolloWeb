@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link, Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { Mail, Lock, LogIn, UserPlus, Activity } from "lucide-react";
-import "../styles/Login.css"; // 👈 Importar los estilos
+import "../styles/Login.css"; // Importar los estilos
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -12,7 +12,7 @@ const Login = () => {
   const navigate = useNavigate();
   const { loginUser, usuario } = useAuth();
 
-  // 🔒 Si el usuario ya está autenticado, lo redirige directamente al Dashboard
+  // Si el usuario ya está autenticado, lo redirige directamente al Dashboard
   if (usuario) {
     return <Navigate to="/dashboard" replace />;
   }
@@ -37,10 +37,10 @@ const Login = () => {
         return;
       }
 
-      // ✅ Guarda usuario y token en contexto/localStorage
+      // Guarda usuario y token en contexto/localStorage
       loginUser(data);
 
-      // ✅ Navega al dashboard y reemplaza el historial (no puede volver atrás)
+      // Navega al dashboard y reemplaza el historial (no puede volver atrás)
       navigate("/dashboard", { replace: true });
     } catch (err) {
       console.error("❌ Error en el login:", err);

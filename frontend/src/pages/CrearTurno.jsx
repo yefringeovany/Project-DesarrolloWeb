@@ -115,7 +115,7 @@ const CrearTurno = () => {
     }
   };
 
-  // 🚫 Validación de permisos
+  // Validación de permisos
   if (!puedeCrearTurnos(usuario?.rol)) {
     return (
       <div className="no-access-container">

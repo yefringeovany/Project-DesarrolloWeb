@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { puedeGestionarClinicas } from "../utils/roles";
-import "../styles/Clinica.css"; // 👈 Importar los estilos modernos
+import "../styles/Clinica.css"; // Importar los estilos modernos
 
 const Clinicas = () => {
   const { usuario } = useAuth();

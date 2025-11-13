@@ -24,11 +24,11 @@ const Turnos = () => {
     prioridad: "normal",
   });
 
-  // 🔥 WebSocket Hook
+  // WebSocket Hook
   const { socket, isConnected } = useSocket('http://localhost:5000', true);
 
   // ========================================
-  // 📡 CONFIGURAR EVENTOS DE SOCKET.IO
+  // CONFIGURAR EVENTOS DE SOCKET.IO
   // ========================================
   useEffect(() => {
     if (!socket || !isConnected) return;
@@ -88,7 +88,7 @@ const Turnos = () => {
   }, [socket, isConnected, clinicaSeleccionada]);
 
   // ========================================
-  // 🏥 UNIRSE A SALA DE CLÍNICA
+  // UNIRSE A SALA DE CLÍNICA
   // ========================================
   useEffect(() => {
     if (!socket || !isConnected || !clinicaSeleccionada) return;
@@ -107,7 +107,7 @@ const Turnos = () => {
   }, [socket, isConnected, clinicaSeleccionada]);
 
   // ========================================
-  // 📋 CARGAR DATOS INICIALES
+  // CARGAR DATOS INICIALES
   // ========================================
   useEffect(() => {
     cargarClinicas();
@@ -122,7 +122,7 @@ const Turnos = () => {
   }, [clinicaSeleccionada]);
 
   // ========================================
-  // 🌐 FUNCIONES DE API
+  // FUNCIONES DE API
   // ========================================
   const cargarClinicas = async () => {
     try {
@@ -187,7 +187,7 @@ const Turnos = () => {
   };
 
   // ========================================
-  // 📝 CREAR TURNO
+  // CREAR TURNO
   // ========================================
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -233,7 +233,7 @@ const Turnos = () => {
   };
 
   // ========================================
-  // 🔄 CAMBIAR ESTADO DE TURNO
+  // CAMBIAR ESTADO DE TURNO
   // ========================================
   const cambiarEstado = async (turnoId, nuevoEstado, observaciones = "") => {
     try {
@@ -267,7 +267,7 @@ const Turnos = () => {
   };
 
   // ========================================
-  // 🎨 UTILIDADES DE UI
+  // UTILIDADES DE UI
   // ========================================
   const getEstadoBadge = (estado) => {
     const badges = {
@@ -291,14 +291,14 @@ const Turnos = () => {
   };
 
   // ========================================
-  // 🎯 RENDER
+  // RENDER
   // ========================================
   return (
     <div className="container my-5">
       {/* Header */}
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h2 className="text-primary">
-          📋 Gestión de Turnos
+          Gestión de Turnos
           {isConnected && (
             <span className="badge bg-success ms-3">● En tiempo real</span>
           )}

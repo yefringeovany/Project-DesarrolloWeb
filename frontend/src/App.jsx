@@ -16,7 +16,7 @@ import HistorialTurnos from "./pages/HistorialTurnos";
 
 
 
-// ✅ Evita acceso a login o register si ya hay usuario
+// Evita acceso a login o register si ya hay usuario
 const PublicRoute = ({ children }) => {
   const { usuario } = useAuth();
   return usuario ? <Navigate to="/dashboard" replace /> : children;
@@ -92,7 +92,7 @@ const AppRoutes = () => (
       }
     />
     
-    {/* 🆕 RUTAS NUEVAS */}
+    {/* RUTAS NUEVAS */}
     <Route
       path="/mi-cola"
       element={
