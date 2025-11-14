@@ -170,7 +170,7 @@ app.get("/api/health", (req, res) => {
 // =======================
 app.use(express.static(path.join(__dirname, "dist")));
 
-app.get("*", (req, res) => {
+app.get("/*", (req, res) => {
   if (req.path.startsWith("/api")) return;
   res.sendFile(path.join(__dirname, "dist", "index.html"));
 });
