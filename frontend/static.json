@@ -1,0 +1,8 @@
+{
+  "root": "dist",
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "routes": {
+    "/**": "index.html"
+  }
+}
