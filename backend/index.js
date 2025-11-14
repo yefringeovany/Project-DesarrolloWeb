@@ -80,6 +80,14 @@ const io = new Server(httpServer, {
   transports: ['websocket', 'polling']
 });
 
+console.log("🔧 Inicializando Socket.IO...");
+
+// Detecta errores de inicialización
+io.engine.on("connection_error", (err) => {
+  console.error("❌ Error al inicializar Socket.IO:", err);
+});
+
+
 // Middleware de autenticación para Socket.IO
 io.use((socket, next) => {
   const token = socket.handshake.auth.token;
@@ -216,6 +224,7 @@ const iniciarServidor = async () => {
       console.log(`📡 Socket.IO listo para conexiones en tiempo real`);
       console.log(`🌐 API disponible en: http://localhost:${PORT}/api`);
       console.log(`💚 Health check: http://localhost:${PORT}/api/health`);
+      console.log("🟢 WebSocket inicializado correctamente y esperando conexiones...");
       console.log(`${'='.repeat(50)}\n`);
     });
 
