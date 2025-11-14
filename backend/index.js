@@ -18,9 +18,15 @@ import routerRol from "./routes/rolRoutes.js";
 import historialTurnoRoutes from "./routes/historialTurnoRoutes.js";
 
 import path from "path";
-const __dirname = path.resolve();
+import { fileURLToPath } from "url";
 
 dotenv.config();
+
+// =======================
+// CONFIGURAR __dirname para ESM
+// =======================
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Importar modelos
 import "./models/Rol.js";
@@ -166,17 +172,18 @@ app.get("/api/health", (req, res) => {
 });
 
 // =======================
-// SERVIR FRONTEND DE REACT
+// SERVIR FRONTEND DE REACT (VITE)
 // =======================
 app.use(express.static(path.join(__dirname, "dist")));
 
-app.get("/*", (req, res) => {
-  if (req.path.startsWith("/api")) return;
+// Middleware de fallback para rutas SPA
+app.use((req, res, next) => {
+  if (req.path.startsWith("/api")) return next();
   res.sendFile(path.join(__dirname, "dist", "index.html"));
 });
 
 // =======================
-// RUTA 404 (solo para API)
+// RUTA 404 SOLO PARA API
 // =======================
 app.use((req, res) => {
   res.status(404).json({
