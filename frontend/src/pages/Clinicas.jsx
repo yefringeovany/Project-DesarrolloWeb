@@ -16,7 +16,7 @@ const Clinicas = () => {
 
   const fetchClinicas = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/clinicas", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/clinicas`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -41,8 +41,8 @@ const Clinicas = () => {
     setMensaje("");
 
     const url = editando
-      ? `http://localhost:5000/api/clinicas/${editando}`
-      : "http://localhost:5000/api/clinicas";
+      ? `${import.meta.env.VITE_API_URL}/api/clinicas/${editando}`
+      : `${import.meta.env.VITE_API_URL}/api/clinicas`;
     const method = editando ? "PUT" : "POST";
 
     try {
@@ -83,7 +83,7 @@ const Clinicas = () => {
   const handleEliminar = async (id) => {
     if (!window.confirm("¿Seguro que deseas eliminar esta clínica?")) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/clinicas/${id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/clinicas/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });

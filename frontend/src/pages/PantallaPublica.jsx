@@ -24,7 +24,7 @@ const PantallaPublica = () => {
 
   // Configurar WebSocket
   useEffect(() => {
-    const newSocket = io("http://localhost:5000", { transports: ["websocket", "polling"] });
+    const newSocket = io(import.meta.env.VITE_API_URL, { transports: ["websocket", "polling"] });
     newSocket.on("connect", () => {
       console.log("✅ Socket conectado");
       setIsConnected(true);
@@ -104,7 +104,7 @@ const PantallaPublica = () => {
 
   const cargarTurnos = async () => {
     try {
-      const resActivos = await fetch("http://localhost:5000/api/turnos/pantalla");
+      const resActivos = await fetch(`${import.meta.env.VITE_API_URL}/api/turnos/pantalla`);
       const dataActivos = await resActivos.json();
       setTurnosActivos(dataActivos.turnos || []);
     } catch (err) {
@@ -116,9 +116,7 @@ const PantallaPublica = () => {
   const reproducirVozTTSBackend = async (numeroTurno, nombreClinica) => {
   try {
     const texto = `Turno número ${numeroTurno}, favor de pasar a la clínica ${nombreClinica || ""}`;
-    const res = await axios.post(
-      "http://localhost:5000/api/tts",
-      { text: texto },
+    const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/tts`, { text: texto },
       { responseType: "arraybuffer" }
     );
     const audioBlob = new Blob([res.data], { type: "audio/mpeg" });

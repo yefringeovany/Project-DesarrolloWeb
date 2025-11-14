@@ -23,7 +23,7 @@ const Usuarios = () => {
   // === CARGAR USUARIOS ===
   const cargarUsuarios = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/usuarios", {
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/usuarios`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setUsuarios(res.data);
@@ -36,7 +36,7 @@ const Usuarios = () => {
   // === CARGAR ROLES ===
   const cargarRoles = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/roles", {
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/roles`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setRoles(Array.isArray(res.data) ? res.data : []);
@@ -80,13 +80,13 @@ const Usuarios = () => {
     try {
       if (editando) {
         await axios.put(
-          `http://localhost:5000/api/usuarios/${editando.id}`,
+          `${import.meta.env.VITE_API_URL}/api/usuarios/${editando.id}`,
           form,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setMensaje("✅ Usuario actualizado correctamente.");
       } else {
-        await axios.post("http://localhost:5000/api/usuarios", form, {
+        await axios.post( `${import.meta.env.VITE_API_URL}/api/usuarios`, form, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setMensaje("✅ Usuario creado correctamente.");
@@ -104,7 +104,7 @@ const Usuarios = () => {
   const eliminarUsuario = async (id) => {
     if (!window.confirm("¿Seguro que deseas eliminar este usuario?")) return;
     try {
-      await axios.delete(`http://localhost:5000/api/usuarios/${id}`, {
+      await axios.delete(`${import.meta.env.VITE_API_URL}/api/usuarios/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setMensaje("🗑️ Usuario eliminado correctamente.");

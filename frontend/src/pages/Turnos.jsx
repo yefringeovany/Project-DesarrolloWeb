@@ -25,7 +25,7 @@ const Turnos = () => {
   });
 
   // WebSocket Hook
-  const { socket, isConnected } = useSocket('http://localhost:5000', true);
+const { socket, isConnected } = useSocket(import.meta.env.VITE_API_URL, true);
 
   // ========================================
   // CONFIGURAR EVENTOS DE SOCKET.IO
@@ -126,7 +126,7 @@ const Turnos = () => {
   // ========================================
   const cargarClinicas = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/clinicas", {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/clinicas`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -138,7 +138,7 @@ const Turnos = () => {
 
   const cargarPacientes = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/pacientes", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/pacientes`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -154,7 +154,7 @@ const Turnos = () => {
     setLoading(true);
     try {
       const res = await fetch(
-        `http://localhost:5000/api/turnos/clinica/${clinicaSeleccionada}`,
+      `${import.meta.env.VITE_API_URL}/api/turnos/clinica/${clinicaSeleccionada}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -174,7 +174,7 @@ const Turnos = () => {
 
     try {
       const res = await fetch(
-        `http://localhost:5000/api/turnos/clinica/${clinicaSeleccionada}/estadisticas`,
+          `${import.meta.env.VITE_API_URL}/api/turnos/clinica/${clinicaSeleccionada}/estadisticas`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -201,7 +201,7 @@ const Turnos = () => {
     }
 
     try {
-      const res = await fetch("http://localhost:5000/api/turnos", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/turnos`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -238,7 +238,7 @@ const Turnos = () => {
   const cambiarEstado = async (turnoId, nuevoEstado, observaciones = "") => {
     try {
       const res = await fetch(
-        `http://localhost:5000/api/turnos/${turnoId}/estado`,
+        `${import.meta.env.VITE_API_URL}/api/turnos/${turnoId}/estado`,
         {
           method: "PATCH",
           headers: {

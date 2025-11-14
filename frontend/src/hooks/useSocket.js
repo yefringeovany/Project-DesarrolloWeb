@@ -7,7 +7,7 @@ import { io } from 'socket.io-client';
  * @param {boolean} requireAuth - Si requiere autenticación con token
  * @returns {object} { socket, isConnected, error }
  */
-const useSocket = (url = 'http://localhost:5000', requireAuth = true) => {
+const useSocket = (url = import.meta.env.VITE_API_URL, requireAuth = true) => {
   const socketRef = useRef(null);
   const [isConnected, setIsConnected] = useState(false);
   const [error, setError] = useState(null);

@@ -25,7 +25,7 @@ const ColaMedico = () => {
   const obtenerCola = async () => {
     try {
       setLoading(true);
-      const res = await fetch("http://localhost:5000/api/turnos/mi-cola", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/turnos/mi-cola`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -80,18 +80,18 @@ const ColaMedico = () => {
   };
 
   const llamarSiguiente = (id) =>
-    actualizarTurno(`http://localhost:5000/api/turnos/${id}/estado`, {
+    actualizarTurno(`${import.meta.env.VITE_API_URL}/api/turnos/${id}/estado`, {
       nuevoEstado: "llamando",
       observaciones: "Paciente, por favor pase a la clínica",
     });
 
   const iniciarAtencion = (id) =>
-    actualizarTurno(`http://localhost:5000/api/turnos/${id}/iniciar-atencion`, {
+    actualizarTurno(`${import.meta.env.VITE_API_URL}/api/turnos/${id}/iniciar-atencion`, {
       observaciones: "Iniciando consulta",
     });
 
   const finalizarAtencion = (id) =>
-    actualizarTurno(`http://localhost:5000/api/turnos/${id}/finalizar-atencion`, {
+    actualizarTurno(`${import.meta.env.VITE_API_URL}/api/turnos/${id}/finalizar-atencion`, {
       observaciones: "Consulta finalizada",
     });
 
