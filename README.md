@@ -166,7 +166,7 @@ Este proyecto fue desarrollado como parte del curso de Desarrollo Web. Para cont
    
 ## 👨‍💻 Autor
 
-Desarrollado por [Yefrin Pérez] como proyecto final del curso de Desarrollo Web.
+Desarrollado por Yefrin Pérez como proyecto de Frelance.
 
 ## 📞 Contacto
 
